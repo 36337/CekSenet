@@ -2,19 +2,33 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
-const fs = require('fs');
 
-// Config yükle
+// Utils
+const logger = require('./utils/logger');
+
+// Config
 const config = require('../config/default.json');
+
+// Middleware
+const requestLogger = require('./middleware/requestLogger');
+const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
+
+// Migration
+const { runMigrations } = require('./migrate');
 
 const app = express();
 const PORT = process.env.PORT || config.server.port;
 
-// Middleware
+// Security middleware
 app.use(helmet());
 app.use(cors());
+
+// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Request logging
+app.use(requestLogger);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -27,24 +41,21 @@ app.get('/api/health', (req, res) => {
 });
 
 // 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    error: 'Not Found',
-    message: `Cannot ${req.method} ${req.path}`
-  });
-});
+app.use(notFoundHandler);
 
 // Error handler
-app.use((err, req, res, next) => {
-  console.error('Error:', err.message);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error'
-  });
-});
+app.use(errorHandler);
 
-// Server başlat
-app.listen(PORT, () => {
-  console.log(`
+// Startup
+async function start() {
+  try {
+    // Migration'ları çalıştır
+    runMigrations();
+    
+    // Server'ı başlat
+    app.listen(PORT, () => {
+      logger.info(`Server started on port ${PORT}`);
+      console.log(`
 ╔═══════════════════════════════════════════╗
 ║         ÇekSenet Backend API              ║
 ╠═══════════════════════════════════════════╣
@@ -53,7 +64,15 @@ app.listen(PORT, () => {
 ║  Mode:    ${process.env.NODE_ENV || 'development'}                     ║
 ║  Health:  http://localhost:${PORT}/api/health ║
 ╚═══════════════════════════════════════════╝
-  `);
-});
+      `);
+    });
+  } catch (error) {
+    logger.error('Failed to start server', { error: error.message });
+    console.error('❌ Failed to start server:', error.message);
+    process.exit(1);
+  }
+}
+
+start();
 
 module.exports = app;
