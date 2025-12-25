@@ -11,9 +11,15 @@ const logger = require('./utils/logger');
 // Middleware
 const requestLogger = require('./middleware/requestLogger');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
+const { apiLimiter } = require('./middleware/rateLimiter');
 
-// Migration
+// Routes
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/users');
+
+// Migration & Seed
 const { runMigrations } = require('./migrate');
+const { seedAdmin } = require('./seed');
 
 const app = express();
 
@@ -28,7 +34,10 @@ app.use(express.urlencoded({ extended: true }));
 // Request logging
 app.use(requestLogger);
 
-// Health check endpoint
+// General API rate limiting
+app.use('/api', apiLimiter);
+
+// Health check endpoint (rate limit dışında)
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -39,10 +48,14 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// 404 handler
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+
+// 404 handler (routes'lardan sonra)
 app.use(notFoundHandler);
 
-// Error handler
+// Error handler (en son)
 app.use(errorHandler);
 
 // Startup
@@ -50,6 +63,9 @@ async function start() {
   try {
     // Migration'ları çalıştır
     runMigrations();
+    
+    // İlk admin kullanıcıyı oluştur (yoksa)
+    await seedAdmin();
     
     // Server'ı başlat
     app.listen(config.server.port, () => {
