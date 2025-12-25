@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 // Config
-const config = require('../../config/default.json');
+const config = require('../utils/config');
 
 // Database dosya yolu
 const dbPath = path.resolve(__dirname, '../../', config.database.path);

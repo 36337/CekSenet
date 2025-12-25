@@ -2,8 +2,8 @@ const winston = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
 const path = require('path');
 
-// Config
-const config = require('../../config/default.json');
+// Config (dotenv already loaded by the time this is imported)
+const config = require('./config');
 
 // Log dizini
 const logDir = path.resolve(__dirname, '../../logs');
@@ -38,7 +38,7 @@ const dailyRotateTransport = new DailyRotateFile({
   filename: path.join(logDir, 'app-%DATE%.log'),
   datePattern: 'YYYY-MM-DD',
   maxSize: '20m',
-  maxFiles: `${config.logging.maxFiles}d`, // 30 gün
+  maxFiles: `${config.logging.maxFiles}d`,
   level: config.logging.level
 });
 
@@ -77,7 +77,7 @@ const logger = winston.createLogger({
 });
 
 // Development'ta console'a da yaz
-if (process.env.NODE_ENV !== 'production') {
+if (!config.isProduction) {
   logger.add(new winston.transports.Console({
     format: consoleFormat
   }));

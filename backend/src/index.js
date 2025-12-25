@@ -1,13 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const path = require('path');
+
+// Config (loads env vars)
+const config = require('./utils/config');
 
 // Utils
 const logger = require('./utils/logger');
-
-// Config
-const config = require('../config/default.json');
 
 // Middleware
 const requestLogger = require('./middleware/requestLogger');
@@ -17,7 +16,6 @@ const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const { runMigrations } = require('./migrate');
 
 const app = express();
-const PORT = process.env.PORT || config.server.port;
 
 // Security middleware
 app.use(helmet());
@@ -36,7 +34,8 @@ app.get('/api/health', (req, res) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    version: '1.0.0'
+    version: '1.0.0',
+    environment: config.env
   });
 });
 
@@ -53,16 +52,16 @@ async function start() {
     runMigrations();
     
     // Server'ı başlat
-    app.listen(PORT, () => {
-      logger.info(`Server started on port ${PORT}`);
+    app.listen(config.server.port, () => {
+      logger.info(`Server started on port ${config.server.port}`);
       console.log(`
 ╔═══════════════════════════════════════════╗
 ║         ÇekSenet Backend API              ║
 ╠═══════════════════════════════════════════╣
 ║  Status:  Running                         ║
-║  Port:    ${PORT}                            ║
-║  Mode:    ${process.env.NODE_ENV || 'development'}                     ║
-║  Health:  http://localhost:${PORT}/api/health ║
+║  Port:    ${config.server.port}                            ║
+║  Mode:    ${config.env.padEnd(25)}║
+║  Health:  http://localhost:${config.server.port}/api/health ║
 ╚═══════════════════════════════════════════╝
       `);
     });
