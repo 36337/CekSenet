@@ -1,0 +1,19 @@
+{
+  "server": {
+    "port": 7475,
+    "productionPort": 7474
+  },
+  "database": {
+    "path": "./database/ceksenet.db"
+  },
+  "jwt": {
+    "expiresIn": "24h"
+  },
+  "logging": {
+    "level": "info",
+    "maxFiles": 30
+  },
+  "bcrypt": {
+    "saltRounds": 12
+  }
+}
