@@ -229,10 +229,10 @@ function create(data, userId) {
   
   // Transaction başlat
   const insertEvrak = db.transaction(() => {
-    // Evrak ekle
+    // Evrak ekle (updated_at de set edilmeli)
     const evrakQuery = `
-      INSERT INTO evraklar (evrak_tipi, evrak_no, tutar, vade_tarihi, banka_adi, kesideci, cari_id, durum, notlar, created_by)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO evraklar (evrak_tipi, evrak_no, tutar, vade_tarihi, banka_adi, kesideci, cari_id, durum, notlar, created_by, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
     `;
     
     const evrakResult = db.prepare(evrakQuery).run(

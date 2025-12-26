@@ -8,7 +8,6 @@ import { Heading } from '@/components/ui/heading'
 import { Text } from '@/components/ui/text'
 import { Badge } from '@/components/ui/badge'
 import {
-  ChartBarIcon,
   Cog6ToothIcon,
   CloudArrowUpIcon,
 } from '@heroicons/react/20/solid'
@@ -44,20 +43,6 @@ function PlaceholderPage({ title, description, icon, children }: PlaceholderProp
         {children}
       </div>
     </div>
-  )
-}
-
-// ============================================
-// Raporlar
-// ============================================
-
-export function RaporlarPage() {
-  return (
-    <PlaceholderPage
-      title="Raporlar"
-      description="Çek ve senet raporları"
-      icon={<ChartBarIcon className="h-6 w-6" />}
-    />
   )
 }
 

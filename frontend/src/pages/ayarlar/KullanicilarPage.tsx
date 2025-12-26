@@ -575,7 +575,7 @@ export function KullanicilarPage() {
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                disabled={isCurrentUser(selectedUser!)}
+                disabled={selectedUser ? isCurrentUser(selectedUser) : false}
               >
                 {Object.entries(USER_ROLE_LABELS).map(([value, label]) => (
                   <option key={value} value={value}>
@@ -583,7 +583,7 @@ export function KullanicilarPage() {
                   </option>
                 ))}
               </Select>
-              {isCurrentUser(selectedUser!) && (
+              {selectedUser && isCurrentUser(selectedUser) && (
                 <Text className="mt-1 text-sm text-zinc-500">
                   Kendi rolünüzü değiştiremezsiniz
                 </Text>

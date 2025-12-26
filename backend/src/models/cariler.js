@@ -131,8 +131,8 @@ function create(data) {
   const { ad_soyad, tip, telefon, email, adres, vergi_no, notlar } = data;
   
   const query = `
-    INSERT INTO cariler (ad_soyad, tip, telefon, email, adres, vergi_no, notlar)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO cariler (ad_soyad, tip, telefon, email, adres, vergi_no, notlar, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
   `;
   
   const result = db.prepare(query).run(

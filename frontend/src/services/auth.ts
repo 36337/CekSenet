@@ -87,14 +87,11 @@ export const getCurrentUser = async (): Promise<User> => {
  * Change Password - Şifre değiştir
  */
 export const changePassword = async (currentPassword: string, newPassword: string): Promise<void> => {
-  const response = await api.put<ApiResponse<null>>('/auth/password', {
-    current_password: currentPassword,
-    new_password: newPassword,
+  await api.put('/auth/password', {
+    currentPassword,
+    newPassword,
+    confirmPassword: newPassword,
   })
-  
-  if (!response.data.success) {
-    throw new Error(response.data.message || 'Şifre değiştirilemedi')
-  }
 }
 
 // ============================================

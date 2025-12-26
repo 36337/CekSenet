@@ -12,5 +12,8 @@ export { EvraklarPage } from './evraklar'
 // Cariler
 export { CarilerPage } from './cariler'
 
+// Raporlar
+export { RaporlarPage } from './raporlar'
+
 // Placeholder pages (will be replaced with real implementations)
 export * from './placeholders'
