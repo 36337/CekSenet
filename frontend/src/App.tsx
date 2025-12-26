@@ -7,22 +7,16 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '@/contexts'
 import { ProtectedRoute, ApplicationLayout } from '@/components'
 import { AppInitializer } from '@/components/AppInitializer'
-import { LoginPage, SetupPage } from '@/pages'
+import { LoginPage, SetupPage, DashboardPage, EvraklarPage, CarilerPage } from '@/pages'
+import { EvrakEklePage, EvrakDetayPage, EvrakDuzenlePage } from '@/pages/evraklar'
+import { CariEklePage, CariDetayPage, CariDuzenlePage } from '@/pages/cariler'
+import { KullanicilarPage, ProfilPage } from '@/pages/ayarlar'
 
 // Placeholder pages (will be replaced with real pages later)
 import {
-  DashboardPage,
-  EvraklarPage,
-  EvrakDetayPage,
-  EvrakEklePage,
-  CarilerPage,
-  CariDetayPage,
-  CariEklePage,
   RaporlarPage,
   AyarlarPage,
-  KullanicilarPage,
   YedeklemePage,
-  ProfilPage,
 } from '@/pages/placeholders'
 
 function App() {
@@ -78,6 +72,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/evraklar/:id/duzenle"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <EvrakDuzenlePage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
 
           {/* Cariler */}
           <Route
@@ -106,6 +110,16 @@ function App() {
               <ProtectedRoute>
                 <ApplicationLayout>
                   <CariDetayPage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cariler/:id/duzenle"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <CariDuzenlePage />
                 </ApplicationLayout>
               </ProtectedRoute>
             }

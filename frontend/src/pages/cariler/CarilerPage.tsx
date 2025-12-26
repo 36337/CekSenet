@@ -1,0 +1,312 @@
+// ============================================
+// ÇekSenet - Cari Listesi Sayfası
+// ============================================
+
+import { useState, useEffect, useCallback } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Heading } from '@/components/ui/heading'
+import { Text } from '@/components/ui/text'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
+import { Badge } from '@/components/ui/badge'
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableHeader,
+  TableCell,
+} from '@/components/ui/table'
+import {
+  PlusIcon,
+  MagnifyingGlassIcon,
+  ArrowPathIcon,
+  UserGroupIcon,
+} from '@heroicons/react/20/solid'
+import {
+  getCariler,
+  CARI_TIP_LABELS,
+  CARI_TIP_COLORS,
+  formatCurrency,
+  type Cari,
+  type CariTip,
+  type CariFilters,
+} from '@/services'
+
+// ============================================
+// Component
+// ============================================
+
+export function CarilerPage() {
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // Data state
+  const [cariler, setCariler] = useState<Cari[]>([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+
+  // Filter state (from URL params)
+  const [tip, setTip] = useState<CariTip | ''>(
+    (searchParams.get('tip') as CariTip) || ''
+  )
+  const [search, setSearch] = useState(searchParams.get('search') || '')
+  const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
+  const [limit, setLimit] = useState(parseInt(searchParams.get('limit') || '10'))
+
+  // UI state
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // ============================================
+  // Fetch Data
+  // ============================================
+
+  const fetchCariler = useCallback(async () => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const filters: CariFilters = {
+        page,
+        limit,
+      }
+
+      if (tip) filters.tip = tip
+      if (search.trim()) filters.search = search.trim()
+
+      const response = await getCariler(filters)
+      setCariler(response.data)
+      setTotalCount(response.pagination.total)
+      setTotalPages(response.pagination.totalPages)
+    } catch (err: any) {
+      setError(err?.message || 'Cariler yüklenirken hata oluştu')
+      setCariler([])
+    } finally {
+      setIsLoading(false)
+    }
+  }, [tip, search, page, limit])
+
+  // Initial load and filter changes
+  useEffect(() => {
+    fetchCariler()
+  }, [fetchCariler])
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (tip) params.set('tip', tip)
+    if (search) params.set('search', search)
+    if (page > 1) params.set('page', String(page))
+    if (limit !== 10) params.set('limit', String(limit))
+    setSearchParams(params, { replace: true })
+  }, [tip, search, page, limit, setSearchParams])
+
+  // ============================================
+  // Handlers
+  // ============================================
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    setPage(1)
+    fetchCariler()
+  }
+
+  const handleClearFilters = () => {
+    setTip('')
+    setSearch('')
+    setPage(1)
+  }
+
+  // ============================================
+  // Render
+  // ============================================
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <Heading>Cariler</Heading>
+          <Text className="mt-1">Müşteri ve tedarikçi hesaplarını yönetin</Text>
+        </div>
+        <Button color="blue" onClick={() => navigate('/cariler/yeni')}>
+          <PlusIcon className="h-5 w-5" />
+          Yeni Cari
+        </Button>
+      </div>
+
+      {/* Filters */}
+      <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+        <form onSubmit={handleSearch} className="flex flex-wrap items-end gap-4">
+          {/* Tip Filter */}
+          <div className="w-full sm:w-40">
+            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Tip
+            </label>
+            <Select
+              value={tip}
+              onChange={(e) => {
+                setTip(e.target.value as CariTip | '')
+                setPage(1)
+              }}
+            >
+              <option value="">Tümü</option>
+              {Object.entries(CARI_TIP_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          {/* Search */}
+          <div className="flex-1 min-w-[200px]">
+            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Arama
+            </label>
+            <Input
+              type="text"
+              placeholder="Ad, telefon, vergi no..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-2">
+            <Button type="submit" outline>
+              <MagnifyingGlassIcon className="h-5 w-5" />
+              Ara
+            </Button>
+            <Button type="button" plain onClick={handleClearFilters}>
+              Temizle
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      {/* Results Info */}
+      <div className="flex items-center justify-between text-sm text-zinc-600 dark:text-zinc-400">
+        <span>
+          {isLoading ? 'Yükleniyor...' : `${totalCount} cari bulundu`}
+        </span>
+        <div className="flex items-center gap-2">
+          <span>Sayfa başına:</span>
+          <Select
+            value={limit}
+            onChange={(e) => {
+              setLimit(parseInt(e.target.value))
+              setPage(1)
+            }}
+            className="w-20"
+          >
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </Select>
+        </div>
+      </div>
+
+      {/* Error State */}
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+          {error}
+        </div>
+      )}
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-12">
+          <ArrowPathIcon className="h-8 w-8 animate-spin text-zinc-400" />
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && !error && cariler.length === 0 && (
+        <div className="rounded-lg border border-zinc-200 bg-white p-12 text-center dark:border-zinc-700 dark:bg-zinc-800">
+          <UserGroupIcon className="mx-auto h-12 w-12 text-zinc-400" />
+          <Text className="mt-4">Cari bulunamadı</Text>
+          <Button className="mt-4" onClick={() => navigate('/cariler/yeni')}>
+            <PlusIcon className="h-5 w-5" />
+            İlk Cariyi Ekle
+          </Button>
+        </div>
+      )}
+
+      {/* Table */}
+      {!isLoading && !error && cariler.length > 0 && (
+        <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeader>Ad Soyad / Firma</TableHeader>
+                <TableHeader>Tip</TableHeader>
+                <TableHeader>Telefon</TableHeader>
+                <TableHeader>Vergi No</TableHeader>
+                <TableHeader className="text-right">İşlem</TableHeader>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {cariler.map((cari) => (
+                <TableRow
+                  key={cari.id}
+                  className="cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700/50"
+                  onClick={() => navigate(`/cariler/${cari.id}`)}
+                >
+                  <TableCell className="font-medium">{cari.ad_soyad}</TableCell>
+                  <TableCell>
+                    <Badge color={CARI_TIP_COLORS[cari.tip] as any}>
+                      {CARI_TIP_LABELS[cari.tip]}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{cari.telefon || '-'}</TableCell>
+                  <TableCell>{cari.vergi_no || '-'}</TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      plain
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        navigate(`/cariler/${cari.id}`)
+                      }}
+                    >
+                      Detay
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {!isLoading && totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <Text className="text-sm">
+            Sayfa {page} / {totalPages}
+          </Text>
+          <div className="flex gap-2">
+            <Button
+              outline
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              Önceki
+            </Button>
+            <Button
+              outline
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Sonraki
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default CarilerPage

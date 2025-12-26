@@ -1,8 +1,12 @@
 // ============================================
 // ÇekSenet - Type Definitions
+// Ortak tipler ve sabitler
 // ============================================
 
-// User Types
+// ============================================
+// User & Auth Types
+// ============================================
+
 export interface User {
   id: number
   username: string
@@ -33,61 +37,22 @@ export interface AuthState {
   isLoading: boolean
 }
 
-// Cari Types
-export interface Cari {
-  id: number
-  unvan: string
-  tip: 'musteri' | 'tedarikci'
-  yetkili_kisi?: string
-  telefon?: string
-  email?: string
-  adres?: string
-  vergi_dairesi?: string
-  vergi_no?: string
-  notlar?: string
-  aktif: boolean
-  created_at: string
-  updated_at: string
-  evrak_sayisi?: number
-  toplam_tutar?: number
-}
+// ============================================
+// Evrak & Cari Base Types (Backend ile uyumlu)
+// Detaylı tipler için services/evraklar.ts ve services/cariler.ts kullanın
+// ============================================
 
-// Evrak Types
 export type EvrakTipi = 'cek' | 'senet'
-export type EvrakDurumu = 'portfoy' | 'ciro' | 'tahsil' | 'odendi' | 'protestolu' | 'iade'
 
-export interface Evrak {
-  id: number
-  evrak_no: string
-  evrak_tipi: EvrakTipi
-  tutar: number
-  vade_tarihi: string
-  durum: EvrakDurumu
-  cari_id: number
-  cari_unvan?: string
-  banka_sube?: string
-  keside_tarihi?: string
-  keside_yeri?: string
-  keşideci?: string
-  bordro_no?: string
-  notlar?: string
-  created_by: number
-  created_at: string
-  updated_at: string
-}
+// Backend'deki geçerli durumlar
+export type EvrakDurumu = 'portfoy' | 'bankada' | 'ciro' | 'tahsil' | 'karsiliksiz'
 
-export interface EvrakHareket {
-  id: number
-  evrak_id: number
-  eski_durum: EvrakDurumu | null
-  yeni_durum: EvrakDurumu
-  aciklama?: string
-  islem_tarihi: string
-  kullanici_id: number
-  kullanici_adi?: string
-}
+export type CariTip = 'musteri' | 'tedarikci'
 
+// ============================================
 // Dashboard Types
+// ============================================
+
 export interface DashboardKart {
   id: string
   baslik: string
@@ -155,7 +120,7 @@ export interface VadeUyarilari {
 export interface TopCari {
   id: number
   ad_soyad: string
-  tip: 'musteri' | 'tedarikci'
+  tip: CariTip
   evrak_adet: number
   toplam_tutar: number
   aktif_evrak_adet: number
@@ -163,7 +128,10 @@ export interface TopCari {
   karsiliksiz_adet: number
 }
 
+// ============================================
 // API Response Types
+// ============================================
+
 export interface ApiResponse<T> {
   success: boolean
   message?: string
@@ -172,7 +140,6 @@ export interface ApiResponse<T> {
 }
 
 export interface PaginatedResponse<T> {
-  success: boolean
   data: T[]
   pagination: {
     page: number
@@ -182,7 +149,10 @@ export interface PaginatedResponse<T> {
   }
 }
 
+// ============================================
 // Settings Types
+// ============================================
+
 export interface AppSettings {
   sirket_adi?: string
   sirket_telefon?: string
@@ -194,20 +164,4 @@ export interface AppSettings {
 export interface SetupStatus {
   isSetupComplete: boolean
   adminExists: boolean
-}
-
-// Filter Types
-export interface EvrakFilters {
-  evrak_tipi?: EvrakTipi
-  durum?: EvrakDurumu
-  cari_id?: number
-  vade_baslangic?: string
-  vade_bitis?: string
-  tutar_min?: number
-  tutar_max?: number
-  arama?: string
-  page?: number
-  limit?: number
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
 }
