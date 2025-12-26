@@ -53,7 +53,6 @@ import {
   USER_ROLE_COLORS,
   type User,
   type UserFormData,
-  type UserRole,
 } from '@/services'
 
 // ============================================

@@ -16,7 +16,6 @@ import {
   createCari,
   CARI_TIP_LABELS,
   type CariFormData,
-  type CariTip,
 } from '@/services'
 
 // ============================================

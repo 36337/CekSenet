@@ -18,8 +18,6 @@ import {
   DURUM_LABELS,
   EVRAK_TIPI_LABELS,
   type EvrakFormData,
-  type EvrakTipi,
-  type EvrakDurumu,
 } from '@/services'
 
 // ============================================

@@ -116,8 +116,17 @@ function getWithStats(id) {
   `;
   const stats = db.prepare(statsQuery).get(id);
   
+  // Frontend'in beklediği formatta döndür (flatten)
   return {
     ...cari,
+    evrak_sayisi: stats.toplam_evrak || 0,
+    toplam_tutar: stats.toplam_tutar || 0,
+    portfoy_tutar: stats.portfoy_tutar || 0,
+    bankada_tutar: stats.bankada_tutar || 0,
+    ciro_tutar: stats.ciro_tutar || 0,
+    tahsil_tutar: stats.tahsil_tutar || 0,
+    karsiliksiz_tutar: stats.karsiliksiz_tutar || 0,
+    // Ayrıntılı istatistikler için de istatistikler objesini ekle
     istatistikler: stats
   };
 }

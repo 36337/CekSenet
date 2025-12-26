@@ -35,13 +35,11 @@ import {
   exportToExcel,
   getBugun,
   getSonXGun,
-  getGelecekXGun,
   getAyBaslangic,
   getAySonu,
   type TarihAraligiFiltre,
   type TarihAraligiRapor,
   type VadeRaporu,
-  type RaporEvrak,
 } from '@/services/reports'
 import {
   DURUM_LABELS,
@@ -493,8 +491,7 @@ export function RaporlarPage() {
               {VADE_GUN_OPTIONS.map((opt) => (
                 <Button
                   key={opt.value}
-                  outline={vadeGun !== opt.value}
-                  color={vadeGun === opt.value ? 'blue' : undefined}
+                  {...(vadeGun === opt.value ? { color: 'blue' as const } : { outline: true as const })}
                   onClick={() => setVadeGun(opt.value)}
                 >
                   {opt.label}

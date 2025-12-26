@@ -28,7 +28,6 @@ import {
   getCariler,
   CARI_TIP_LABELS,
   CARI_TIP_COLORS,
-  formatCurrency,
   type Cari,
   type CariTip,
   type CariFilters,

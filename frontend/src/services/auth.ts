@@ -4,7 +4,7 @@
 // ============================================
 
 import api, { setToken, removeToken } from './api'
-import type { LoginCredentials, LoginResponse, User, SetupStatus, ApiResponse } from '@/types'
+import type { LoginCredentials, LoginResponse, User, SetupStatus } from '@/types'
 
 // ============================================
 // Auth Endpoints

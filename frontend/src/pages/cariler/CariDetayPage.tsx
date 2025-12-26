@@ -240,7 +240,7 @@ export function CariDetayPage() {
             <PencilSquareIcon className="h-5 w-5" />
             Düzenle
           </Button>
-          <Button color="red" outline onClick={handleDeleteClick}>
+          <Button color="red" onClick={handleDeleteClick}>
             <TrashIcon className="h-5 w-5" />
             Sil
           </Button>
