@@ -18,6 +18,10 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const carilerRoutes = require('./routes/cariler');
 const evraklarRoutes = require('./routes/evraklar');
+const dashboardRoutes = require('./routes/dashboard');
+const raporlarRoutes = require('./routes/raporlar');
+const backupRoutes = require('./routes/backup');
+const settingsRoutes = require('./routes/settings');
 
 // Migration & Seed
 const { runMigrations } = require('./migrate');
@@ -55,6 +59,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/cariler', carilerRoutes);
 app.use('/api/evraklar', evraklarRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/raporlar', raporlarRoutes);
+app.use('/api/backup', backupRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // 404 handler (routes'lardan sonra)
 app.use(notFoundHandler);

@@ -1,33 +1,178 @@
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Heading } from '@/components/ui/heading'
-import { Text } from '@/components/ui/text'
+// ============================================
+// ÇekSenet - Main App Component
+// Application routing and providers
+// ============================================
+
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from '@/contexts'
+import { ProtectedRoute, ApplicationLayout } from '@/components'
+import { AppInitializer } from '@/components/AppInitializer'
+import { LoginPage, SetupPage } from '@/pages'
+
+// Placeholder pages (will be replaced with real pages later)
+import {
+  DashboardPage,
+  EvraklarPage,
+  EvrakDetayPage,
+  EvrakEklePage,
+  CarilerPage,
+  CariDetayPage,
+  CariEklePage,
+  RaporlarPage,
+  AyarlarPage,
+  KullanicilarPage,
+  YedeklemePage,
+  ProfilPage,
+} from '@/pages/placeholders'
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-        <Heading level={1} className="text-primary-600 mb-2">
-          ÇekSenet
-        </Heading>
-        <Text className="text-gray-600 mb-6">
-          Çek/Senet Takip Sistemi kurulumu tamamlandı.
-        </Text>
-        
-        <div className="flex flex-wrap gap-2 mb-6">
-          <Badge color="blue">Portföy</Badge>
-          <Badge color="purple">Bankada</Badge>
-          <Badge color="orange">Ciro</Badge>
-          <Badge color="green">Tahsil</Badge>
-          <Badge color="red">Karşılıksız</Badge>
-        </div>
-        
-        <div className="flex gap-2">
-          <Button color="dark">Giriş Yap</Button>
-          <Button outline>İptal</Button>
-        </div>
-      </div>
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <AppInitializer>
+          <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/setup" element={<SetupPage />} />
+
+          {/* Protected Routes - With Layout */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <DashboardPage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Evraklar */}
+          <Route
+            path="/evraklar"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <EvraklarPage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/evraklar/yeni"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <EvrakEklePage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/evraklar/:id"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <EvrakDetayPage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Cariler */}
+          <Route
+            path="/cariler"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <CarilerPage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cariler/yeni"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <CariEklePage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cariler/:id"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <CariDetayPage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Raporlar */}
+          <Route
+            path="/raporlar"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <RaporlarPage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Ayarlar */}
+          <Route
+            path="/ayarlar"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <AyarlarPage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ayarlar/profil"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <ProfilPage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin Only Routes */}
+          <Route
+            path="/ayarlar/kullanicilar"
+            element={
+              <ProtectedRoute requireAdmin>
+                <ApplicationLayout>
+                  <KullanicilarPage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ayarlar/yedekleme"
+            element={
+              <ProtectedRoute requireAdmin>
+                <ApplicationLayout>
+                  <YedeklemePage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Catch all - Redirect to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        </AppInitializer>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
 
