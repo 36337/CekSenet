@@ -16,6 +16,8 @@ const { apiLimiter } = require('./middleware/rateLimiter');
 // Routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
+const carilerRoutes = require('./routes/cariler');
+const evraklarRoutes = require('./routes/evraklar');
 
 // Migration & Seed
 const { runMigrations } = require('./migrate');
@@ -51,6 +53,8 @@ app.get('/api/health', (req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/cariler', carilerRoutes);
+app.use('/api/evraklar', evraklarRoutes);
 
 // 404 handler (routes'lardan sonra)
 app.use(notFoundHandler);
