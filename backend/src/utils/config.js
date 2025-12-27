@@ -1,8 +1,21 @@
-// Load environment variables first
-require('dotenv').config();
-
+// Load environment variables based on NODE_ENV
 const path = require('path');
 const fs = require('fs');
+
+// Determine which .env file to load
+const envFile = process.env.NODE_ENV === 'production' 
+  ? '.env.production' 
+  : '.env';
+
+const envPath = path.resolve(__dirname, '../../', envFile);
+
+// Load .env file if exists
+if (fs.existsSync(envPath)) {
+  require('dotenv').config({ path: envPath });
+} else {
+  // Fallback to default .env
+  require('dotenv').config();
+}
 
 // Load default config
 const defaultConfigPath = path.resolve(__dirname, '../../config/default.json');

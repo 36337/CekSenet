@@ -9,6 +9,8 @@
     "dev:frontend": "cd frontend && npm run dev",
     "start": "cd backend && npm start",
     "build": "cd frontend && npm run build",
+    "build:production": "npm run build && echo Production build complete!",
+    "start:production": "cd backend && npm run start:production",
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
   },
   "keywords": [
