@@ -8,6 +8,7 @@ const config = require('./utils/config');
 
 // Utils
 const logger = require('./utils/logger');
+const scheduler = require('./utils/scheduler');
 
 // Middleware
 const requestLogger = require('./middleware/requestLogger');
@@ -130,6 +131,11 @@ async function start() {
     app.listen(port, () => {
       logger.info(`Server started on port ${port} in ${config.env} mode`);
       
+      // Production'da scheduler'ı başlat (otomatik yedekleme)
+      if (config.isProduction) {
+        scheduler.startScheduler();
+      }
+      
       if (config.isProduction) {
         console.log(`
 ╔═══════════════════════════════════════════════╗
@@ -162,5 +168,18 @@ async function start() {
 }
 
 start();
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM signal received. Shutting down gracefully...');
+  scheduler.stopScheduler();
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  logger.info('SIGINT signal received. Shutting down gracefully...');
+  scheduler.stopScheduler();
+  process.exit(0);
+});
 
 module.exports = app;

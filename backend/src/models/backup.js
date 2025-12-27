@@ -7,10 +7,16 @@ const path = require('path');
 const fs = require('fs');
 const db = require('./db');
 const logger = require('../utils/logger');
+const config = require('../utils/config');
 
-// Yedekleme dizini
-const BACKUP_DIR = path.join(__dirname, '../../database/backups');
-const DB_PATH = path.join(__dirname, '../../database/ceksenet.db');
+// Veritabanı yolu (config'den al - db.js ile aynı mantık)
+const DB_PATH = path.isAbsolute(config.database.path)
+  ? config.database.path
+  : path.join(__dirname, '../../', config.database.path);
+
+// Yedekleme dizini (database dizininin altında backups klasörü)
+const DB_DIR = path.dirname(DB_PATH);
+const BACKUP_DIR = path.join(DB_DIR, 'backups');
 
 // Yedekleme dizininin varlığını kontrol et
 if (!fs.existsSync(BACKUP_DIR)) {

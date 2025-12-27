@@ -6,7 +6,10 @@ const fs = require('fs');
 const config = require('../utils/config');
 
 // Database dosya yolu
-const dbPath = path.resolve(__dirname, '../../', config.database.path);
+// Eğer absolute path verilmişse direkt kullan, değilse resolve et
+const dbPath = path.isAbsolute(config.database.path) 
+  ? config.database.path 
+  : path.resolve(__dirname, '../../', config.database.path);
 
 // Database klasörünün var olduğundan emin ol
 const dbDir = path.dirname(dbPath);

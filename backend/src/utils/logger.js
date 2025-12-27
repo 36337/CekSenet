@@ -5,8 +5,8 @@ const path = require('path');
 // Config (dotenv already loaded by the time this is imported)
 const config = require('./config');
 
-// Log dizini
-const logDir = path.resolve(__dirname, '../../logs');
+// Log dizini (environment variable veya varsayılan)
+const logDir = process.env.LOG_DIR || path.resolve(__dirname, '../../logs');
 
 // Log formatı
 const logFormat = winston.format.combine(
