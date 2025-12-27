@@ -112,15 +112,6 @@ ensureDir(backendDest);
 console.log('');
 console.log('3. Backend kopyalanıyor...');
 
-// Backend dosyalarını kopyala (node_modules hariç önce, sonra ekle)
-const backendExclude = [
-  'node_modules',
-  '.env',
-  '.env.local',
-  'database',  // Veritabanı ayrı klasörde olacak
-  'logs'       // Loglar ayrı klasörde olacak
-];
-
 // src klasörü
 copyDir(path.join(BACKEND_SRC, 'src'), path.join(backendDest, 'src'));
 console.log('  ✓ backend/src/ kopyalandı');
@@ -128,6 +119,31 @@ console.log('  ✓ backend/src/ kopyalandı');
 // config klasörü
 copyDir(path.join(BACKEND_SRC, 'config'), path.join(backendDest, 'config'));
 console.log('  ✓ backend/config/ kopyalandı');
+
+// database klasörü (migrations dahil, .db dosyaları hariç)
+const dbDest = path.join(backendDest, 'database');
+ensureDir(dbDest);
+ensureDir(path.join(dbDest, 'backups'));
+
+// migrations klasörünü kopyala
+const migrationsSrc = path.join(BACKEND_SRC, 'database', 'migrations');
+if (fs.existsSync(migrationsSrc)) {
+  copyDir(migrationsSrc, path.join(dbDest, 'migrations'));
+  console.log('  ✓ database/migrations/ kopyalandı');
+} else {
+  console.log('  ⚠ migrations klasörü bulunamadı');
+}
+
+// .gitkeep dosyaları
+fs.writeFileSync(path.join(dbDest, '.gitkeep'), '');
+fs.writeFileSync(path.join(dbDest, 'backups', '.gitkeep'), '');
+console.log('  ✓ backend/database/ hazır');
+
+// logs klasörü (boş)
+const logsDest = path.join(backendDest, 'logs');
+ensureDir(logsDest);
+fs.writeFileSync(path.join(logsDest, '.gitkeep'), '');
+console.log('  ✓ backend/logs/ hazır');
 
 // package.json ve package-lock.json
 fs.copyFileSync(
@@ -174,24 +190,7 @@ copyDir(FRONTEND_DIST, frontendDest);
 console.log('  ✓ frontend/dist/ kopyalandı');
 
 console.log('');
-console.log('5. Ek klasörler oluşturuluyor...');
-
-// database klasörü (boş, .gitkeep ile)
-const dbDir = path.join(BUILD_DIR, 'database');
-ensureDir(dbDir);
-ensureDir(path.join(dbDir, 'backups'));
-fs.writeFileSync(path.join(dbDir, '.gitkeep'), '');
-fs.writeFileSync(path.join(dbDir, 'backups', '.gitkeep'), '');
-console.log('  ✓ database/ klasörü hazır');
-
-// logs klasörü (boş)
-const logsDir = path.join(BUILD_DIR, 'logs');
-ensureDir(logsDir);
-fs.writeFileSync(path.join(logsDir, '.gitkeep'), '');
-console.log('  ✓ logs/ klasörü hazır');
-
-console.log('');
-console.log('6. Boyut hesaplanıyor...');
+console.log('5. Boyut hesaplanıyor...');
 
 function getDirSize(dir) {
   let size = 0;

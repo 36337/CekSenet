@@ -10,7 +10,6 @@
 #define MyAppPublisher "Yalçınkaya"
 #define MyAppURL "http://localhost:7474"
 #define MyAppExeName "node.exe"
-#define MyServiceName "CekSenet"
 
 [Setup]
 ; Uygulama kimliği (GUID) - değiştirmeyin
@@ -21,7 +20,7 @@ AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-; Yönetici yetkisi gerekli (servis kurulumu için)
+; Yönetici yetkisi gerekli (firewall için)
 PrivilegesRequired=admin
 ; Output ayarları
 OutputDir=output
@@ -33,7 +32,6 @@ SolidCompression=yes
 WizardStyle=modern
 ; Kurulum sihirbazı boyutu
 WizardSizePercent=100
-; Dil
 ; Uninstaller
 UninstallDisplayIcon={app}\node\node.exe
 UninstallDisplayName={#MyAppName}
@@ -44,6 +42,9 @@ VersionInfoDescription=Çek/Senet Takip Sistemi
 VersionInfoTextVersion={#MyAppVersion}
 ; Minimum Windows versiyonu (Windows 10)
 MinVersion=10.0
+; 64-bit kurulum
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
 
 [Languages]
 Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
@@ -53,71 +54,70 @@ turkish.BeveledLabel=Çek/Senet Takip Sistemi
 
 [Tasks]
 Name: "desktopicon"; Description: "Masaüstü kısayolu oluştur"; GroupDescription: "Ek görevler:"
-Name: "autostart"; Description: "Windows başlangıcında otomatik başlat"; GroupDescription: "Ek görevler:"; Flags: checkedonce
+Name: "autostart"; Description: "Windows başlangıcında otomatik başlat"; GroupDescription: "Ek görevler:"
 
 [Files]
 ; Node.js runtime
 Source: "build\node\*"; DestDir: "{app}\node"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-; Uygulama dosyaları
+; Uygulama dosyaları (backend + frontend)
 Source: "build\app\*"; DestDir: "{app}\app"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-; Servis scriptleri
+; Servis/başlatıcı scriptleri
 Source: "build\service\*"; DestDir: "{app}\service"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-; Database ve logs klasörleri (boş)
-Source: "build\database\*"; DestDir: "{app}\database"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "build\logs\*"; DestDir: "{app}\logs"; Flags: ignoreversion recursesubdirs createallsubdirs
-
 [Dirs]
-; Yazma izni gereken klasörler
-Name: "{app}\database"; Permissions: users-modify
-Name: "{app}\database\backups"; Permissions: users-modify
-Name: "{app}\logs"; Permissions: users-modify
+; Yazma izni gereken klasörler (backend içinde)
+Name: "{app}\app\backend\database"; Permissions: users-modify
+Name: "{app}\app\backend\database\backups"; Permissions: users-modify
+Name: "{app}\app\backend\logs"; Permissions: users-modify
 
 [Icons]
-; Başlat menüsü
+; Başlat menüsü - Web arayüzü
 Name: "{group}\{#MyAppName}"; Filename: "http://localhost:7474"; IconFilename: "{app}\node\node.exe"
-Name: "{group}\{#MyAppName} Durdur"; Filename: "{sys}\net.exe"; Parameters: "stop {#MyServiceName}"; IconFilename: "{sys}\shell32.dll"; IconIndex: 27
-Name: "{group}\{#MyAppName} Başlat"; Filename: "{sys}\net.exe"; Parameters: "start {#MyServiceName}"; IconFilename: "{sys}\shell32.dll"; IconIndex: 137
+
+; Başlat menüsü - Sunucuyu Başlat
+Name: "{group}\{#MyAppName} Sunucuyu Başlat"; Filename: "{app}\node\node.exe"; Parameters: """{app}\service\start-background.js"""; WorkingDir: "{app}"; IconFilename: "{app}\node\node.exe"
+
+; Başlat menüsü - Kaldır
 Name: "{group}\Kaldır"; Filename: "{uninstallexe}"
 
-; Masaüstü kısayolu
+; Masaüstü kısayolu - Web arayüzü
 Name: "{autodesktop}\{#MyAppName}"; Filename: "http://localhost:7474"; IconFilename: "{app}\node\node.exe"; Tasks: desktopicon
 
+; Windows Startup - Otomatik başlatma
+Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\node\node.exe"; Parameters: """{app}\service\start-background.js"""; WorkingDir: "{app}"; Tasks: autostart
+
 [Run]
-; Kurulum sonrası servis kurulumu
-Filename: "{app}\node\node.exe"; Parameters: """{app}\service\install-service.js"""; WorkingDir: "{app}"; StatusMsg: "Servis kuruluyor..."; Flags: runhidden waituntilterminated
 ; Firewall kuralı ekle
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""CekSenet"" dir=in action=allow protocol=TCP localport=7474"; StatusMsg: "Firewall kuralı ekleniyor..."; Flags: runhidden waituntilterminated
+
+; Uygulamayı arka planda başlat
+Filename: "{app}\node\node.exe"; Parameters: """{app}\service\start-background.js"""; WorkingDir: "{app}"; StatusMsg: "Sunucu başlatılıyor..."; Flags: runhidden waituntilterminated
+
 ; Tarayıcıda aç
 Filename: "http://localhost:7474"; Description: "CekSenet'i tarayıcıda aç"; Flags: postinstall nowait shellexec skipifsilent
 
 [UninstallRun]
-; Servisi durdur ve kaldır
-Filename: "{sys}\net.exe"; Parameters: "stop {#MyServiceName}"; Flags: runhidden waituntilterminated
-Filename: "{app}\node\node.exe"; Parameters: """{app}\service\uninstall-service.js"""; WorkingDir: "{app}"; Flags: runhidden waituntilterminated
 ; Firewall kuralını kaldır
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall delete rule name=""CekSenet"""; Flags: runhidden waituntilterminated
 
 [UninstallDelete]
-; Oluşturulan dosyaları temizle (veritabanı ve loglar kullanıcıya bırakılabilir)
-Type: filesandordirs; Name: "{app}\logs\*"
+; Oluşturulan dosyaları temizle
+Type: filesandordirs; Name: "{app}\app\backend\logs\*"
+; Startup kısayolunu sil
+Type: files; Name: "{userstartup}\{#MyAppName}.lnk"
 
 [Code]
-// Kurulum öncesi kontroller
-function InitializeSetup(): Boolean;
+// Kaldırma öncesi - çalışan node.exe process'lerini kapat
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  ResultCode: Integer;
 begin
-  Result := True;
-end;
-
-// Kurulum sonrası
-procedure CurStepChanged(CurStep: TSetupStep);
-begin
-  if CurStep = ssPostInstall then
+  if CurUninstallStep = usUninstall then
   begin
-    // Kurulum tamamlandı
-    Log('CekSenet kurulumu tamamlandı');
+    // CekSenet node process'ini kapat (port 7474 dinleyen)
+    Exec('cmd.exe', '/c for /f "tokens=5" %a in (''netstat -ano ^| findstr :7474'') do taskkill /f /pid %a', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   end;
 end;
 
