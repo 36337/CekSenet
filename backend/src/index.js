@@ -128,7 +128,7 @@ async function start() {
     // Server'ı başlat - Production'da farklı port kullan
     const port = config.isProduction ? config.server.productionPort : config.server.port;
     
-    app.listen(port, () => {
+    app.listen(port, '0.0.0.0', () => {
       logger.info(`Server started on port ${port} in ${config.env} mode`);
       
       // Production'da scheduler'ı başlat (otomatik yedekleme)
