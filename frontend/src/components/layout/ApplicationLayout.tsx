@@ -132,10 +132,10 @@ function AppSidebar({ pathname, isAdmin, user, onLogout }: AppSidebarProps) {
             className="h-7 w-auto"
           />
           <div className="flex flex-col">
-            <span className="text-sm font-semibold leading-tight text-zinc-950">
+            <span className="text-sm font-semibold leading-tight text-sidebar-text">
               Çek Senet
             </span>
-            <span className="text-xs leading-tight text-zinc-500">
+            <span className="text-xs leading-tight text-sidebar-text-muted">
               Takip Sistemi
             </span>
           </div>
@@ -220,10 +220,10 @@ function AppSidebar({ pathname, isAdmin, user, onLogout }: AppSidebarProps) {
             className="size-8 bg-blue-600 text-white"
           />
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-medium text-zinc-950">
+            <div className="truncate text-sm font-medium text-sidebar-text">
               {user?.ad_soyad || 'Kullanıcı'}
             </div>
-            <div className="truncate text-xs text-zinc-500">
+            <div className="truncate text-xs text-sidebar-text-muted">
               {user?.rol === 'admin' ? 'Yönetici' : 'Kullanıcı'}
             </div>
           </div>

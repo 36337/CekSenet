@@ -53,10 +53,10 @@
   --color-sidebar-text-muted: #0369a1;
   --color-sidebar-border: #bae6fd;
   
-  /* Ana İçerik - Koyu Gri-Mavi */
-  --color-content-bg: #3a4549;
-  --color-content-text: #f8fafc;
-  --color-content-text-muted: #94a3b8;
+  /* Ana İçerik - Açık Gri */
+  --color-content-bg: #f1f5f9;
+  --color-content-text: #1e293b;
+  --color-content-text-muted: #64748b;
   
   /* Kart - Kırık Beyaz */
   --color-card-bg: #f8f9fa;

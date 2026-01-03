@@ -32,8 +32,9 @@ interface FormErrors {
   evrak_no?: string
   tutar?: string
   vade_tarihi?: string
-  kesideci?: string
+  evrak_tarihi?: string
   banka_adi?: string
+  kesideci?: string
   cari_id?: string
   notlar?: string
   general?: string
@@ -64,6 +65,7 @@ export function EvrakDuzenlePage() {
     evrak_no: '',
     tutar: '',
     vade_tarihi: '',
+    evrak_tarihi: '',
     banka_adi: '',
     kesideci: '',
     cari_id: null,
@@ -106,8 +108,9 @@ export function EvrakDuzenlePage() {
           evrak_no: evrak.evrak_no,
           tutar: evrak.tutar.toString(),
           vade_tarihi: evrak.vade_tarihi,
+          evrak_tarihi: evrak.evrak_tarihi || '',
           banka_adi: evrak.banka_adi || '',
-          kesideci: evrak.kesideci,
+          kesideci: evrak.kesideci || '',
           cari_id: evrak.cari_id,
           durum: evrak.durum,
           notlar: evrak.notlar || '',
@@ -173,12 +176,8 @@ export function EvrakDuzenlePage() {
       newErrors.vade_tarihi = 'Vade tarihi seçiniz'
     }
 
-    // Keşideci
-    if (!formData.kesideci.trim()) {
-      newErrors.kesideci = 'Keşideci gerekli'
-    } else if (formData.kesideci.length < 2) {
-      newErrors.kesideci = 'Keşideci en az 2 karakter olmalı'
-    } else if (formData.kesideci.length > 200) {
+    // Keşideci - artık opsiyonel, sadece max karakter kontrolü
+    if (formData.kesideci && formData.kesideci.length > 200) {
       newErrors.kesideci = 'Keşideci en fazla 200 karakter olabilir'
     }
 
@@ -345,7 +344,7 @@ export function EvrakDuzenlePage() {
 
         <div className="rounded-lg border border-zinc-200 bg-white p-6">
           <FieldGroup>
-            {/* Evrak Tipi & Durum */}
+            {/* Evrak Tipi & Evrak No */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <Field>
                 <Label>Evrak Tipi *</Label>
@@ -365,26 +364,6 @@ export function EvrakDuzenlePage() {
               </Field>
 
               <Field>
-                <Label>Durum</Label>
-                <Select
-                  name="durum"
-                  value={formData.durum}
-                  onChange={handleChange}
-                  disabled
-                >
-                  {Object.entries(DURUM_LABELS).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </Select>
-                <Description>Durum değişikliği için "Durum Değiştir" butonunu kullanın</Description>
-              </Field>
-            </div>
-
-            {/* Evrak No & Tutar */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <Field>
                 <Label>Evrak No *</Label>
                 <Input
                   name="evrak_no"
@@ -396,7 +375,10 @@ export function EvrakDuzenlePage() {
                 />
                 {errors.evrak_no && <ErrorMessage>{errors.evrak_no}</ErrorMessage>}
               </Field>
+            </div>
 
+            {/* Tutar & Evrak Tarihi */}
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <Field>
                 <Label>Tutar (₺) *</Label>
                 <Input
@@ -410,6 +392,19 @@ export function EvrakDuzenlePage() {
                   invalid={!!errors.tutar}
                 />
                 {errors.tutar && <ErrorMessage>{errors.tutar}</ErrorMessage>}
+              </Field>
+
+              <Field>
+                <Label>Evrak Tarihi</Label>
+                <Input
+                  name="evrak_tarihi"
+                  type="date"
+                  value={formData.evrak_tarihi || ''}
+                  onChange={handleChange}
+                  invalid={!!errors.evrak_tarihi}
+                />
+                {errors.evrak_tarihi && <ErrorMessage>{errors.evrak_tarihi}</ErrorMessage>}
+                <Description>Evrakın düzenlenme/keşide tarihi</Description>
               </Field>
             </div>
 
@@ -445,11 +440,11 @@ export function EvrakDuzenlePage() {
             {/* Keşideci & Cari */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <Field>
-                <Label>Keşideci *</Label>
+                <Label>Keşideci</Label>
                 <Input
                   name="kesideci"
                   type="text"
-                  value={formData.kesideci}
+                  value={formData.kesideci || ''}
                   onChange={handleChange}
                   placeholder="Çeki/senedi veren kişi veya firma"
                   invalid={!!errors.kesideci}
@@ -475,6 +470,26 @@ export function EvrakDuzenlePage() {
                   ))}
                 </Select>
                 <Description>İlişkili cari hesap</Description>
+              </Field>
+            </div>
+
+            {/* Durum */}
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <Field>
+                <Label>Durum</Label>
+                <Select
+                  name="durum"
+                  value={formData.durum}
+                  onChange={handleChange}
+                  disabled
+                >
+                  {Object.entries(DURUM_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+                <Description>Durum değişikliği için "Durum Değiştir" butonunu kullanın</Description>
               </Field>
             </div>
 

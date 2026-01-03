@@ -69,7 +69,7 @@ export function LoginPage() {
   // ============================================
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
+      <div className="flex min-h-screen items-center justify-center bg-sidebar-bg">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
           <Text className="mt-4">Yükleniyor...</Text>
@@ -89,7 +89,7 @@ export function LoginPage() {
   // Render Login Form
   // ============================================
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-zinc-50 px-6 py-12 lg:px-8">
+    <div className="flex min-h-screen flex-col justify-center bg-sidebar-bg px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Logo / App Name */}
         <div className="flex justify-center">

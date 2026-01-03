@@ -367,6 +367,7 @@ export function EvraklarPage() {
             <Table striped>
               <TableHead>
                 <TableRow>
+                  <TableHeader>Cari</TableHeader>
                   <TableHeader>Durum</TableHeader>
                   <TableHeader>Tip</TableHeader>
                   <TableHeader>
@@ -375,17 +376,20 @@ export function EvraklarPage() {
                   <TableHeader>
                     <SortableHeader field="tutar">Tutar</SortableHeader>
                   </TableHeader>
+                  <TableHeader>Evrak Tarihi</TableHeader>
                   <TableHeader>
-                    <SortableHeader field="vade_tarihi">Vade Tarihi</SortableHeader>
+                    <SortableHeader field="vade_tarihi">Valör</SortableHeader>
                   </TableHeader>
                   <TableHeader>Keşideci</TableHeader>
-                  <TableHeader>Cari</TableHeader>
                   <TableHeader className="text-right">İşlem</TableHeader>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {evraklar.map((evrak) => (
                   <TableRow key={evrak.id} href={`/evraklar/${evrak.id}`}>
+                    <TableCell className="text-zinc-600">
+                      {evrak.cari_adi || '-'}
+                    </TableCell>
                     <TableCell>
                       <Badge color={DURUM_COLORS[evrak.durum] as any}>
                         {DURUM_LABELS[evrak.durum]}
@@ -400,10 +404,12 @@ export function EvraklarPage() {
                     <TableCell className="font-medium text-zinc-900">
                       {formatCurrency(evrak.tutar)}
                     </TableCell>
+                    <TableCell className="text-zinc-600">
+                      {evrak.evrak_tarihi ? formatDate(evrak.evrak_tarihi) : '-'}
+                    </TableCell>
                     <TableCell>{formatDate(evrak.vade_tarihi)}</TableCell>
-                    <TableCell>{evrak.kesideci}</TableCell>
-                    <TableCell className="text-zinc-500">
-                      {evrak.cari_adi || '-'}
+                    <TableCell className="text-zinc-600">
+                      {evrak.kesideci || '-'}
                     </TableCell>
                     <TableCell className="text-right">
                       <Button

@@ -219,9 +219,10 @@ function create(data, userId) {
     evrak_tipi, 
     evrak_no, 
     tutar, 
-    vade_tarihi, 
+    vade_tarihi,
+    evrak_tarihi,  // YENİ: Evrak tarihi (opsiyonel)
     banka_adi, 
-    kesideci, 
+    kesideci,      // Artık opsiyonel (boş string kabul edilir)
     cari_id, 
     durum = 'portfoy',
     notlar 
@@ -231,8 +232,8 @@ function create(data, userId) {
   const insertEvrak = db.transaction(() => {
     // Evrak ekle (updated_at de set edilmeli)
     const evrakQuery = `
-      INSERT INTO evraklar (evrak_tipi, evrak_no, tutar, vade_tarihi, banka_adi, kesideci, cari_id, durum, notlar, created_by, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      INSERT INTO evraklar (evrak_tipi, evrak_no, tutar, vade_tarihi, evrak_tarihi, banka_adi, kesideci, cari_id, durum, notlar, created_by, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
     `;
     
     const evrakResult = db.prepare(evrakQuery).run(
@@ -240,8 +241,9 @@ function create(data, userId) {
       evrak_no,
       parseFloat(tutar),
       vade_tarihi,
+      evrak_tarihi || null,           // YENİ: evrak_tarihi (nullable)
       banka_adi || null,
-      kesideci,
+      kesideci || '',                  // Boş string kabul (DB NOT NULL)
       cari_id || null,
       durum,
       notlar || null,
@@ -287,9 +289,10 @@ function update(id, data, userId) {
     evrak_tipi, 
     evrak_no, 
     tutar, 
-    vade_tarihi, 
+    vade_tarihi,
+    evrak_tarihi,  // YENİ: Evrak tarihi (opsiyonel)
     banka_adi, 
-    kesideci, 
+    kesideci,      // Artık opsiyonel
     cari_id, 
     notlar 
   } = data;
@@ -302,6 +305,7 @@ function update(id, data, userId) {
       evrak_no = ?,
       tutar = ?,
       vade_tarihi = ?,
+      evrak_tarihi = ?,
       banka_adi = ?,
       kesideci = ?,
       cari_id = ?,
@@ -315,8 +319,9 @@ function update(id, data, userId) {
     evrak_no,
     parseFloat(tutar),
     vade_tarihi,
+    evrak_tarihi || null,           // YENİ: evrak_tarihi (nullable)
     banka_adi || null,
-    kesideci,
+    kesideci || '',                  // Boş string kabul (DB NOT NULL)
     cari_id || null,
     notlar || null,
     id

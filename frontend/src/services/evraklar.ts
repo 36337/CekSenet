@@ -18,8 +18,9 @@ export interface Evrak {
   evrak_no: string
   tutar: number
   vade_tarihi: string
+  evrak_tarihi: string | null  // YENİ: Evrak/keşide tarihi (opsiyonel)
   banka_adi: string | null
-  kesideci: string
+  kesideci: string | null      // Artık opsiyonel (boş olabilir)
   cari_id: number | null
   cari_adi: string | null
   durum: EvrakDurumu
@@ -50,8 +51,9 @@ export interface EvrakFormData {
   evrak_no: string
   tutar: number | string
   vade_tarihi: string
+  evrak_tarihi?: string        // YENİ: Evrak/keşide tarihi (opsiyonel)
   banka_adi?: string
-  kesideci: string
+  kesideci?: string            // Artık opsiyonel
   cari_id?: number | null
   durum?: EvrakDurumu
   notlar?: string

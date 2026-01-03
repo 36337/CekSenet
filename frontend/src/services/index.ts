@@ -128,3 +128,7 @@ export type {
   CariOzet,
   CarilerRaporu,
 } from './reports'
+
+// System
+export { getSystemIP, getSystemHealth } from './system'
+export type { NetworkInterface, SystemIPInfo } from './system'

@@ -33,14 +33,17 @@ const evrakValidationRules = [
   body('vade_tarihi')
     .notEmpty().withMessage('Vade tarihi gerekli')
     .isISO8601().withMessage('Geçersiz tarih formatı (YYYY-MM-DD)'),
+  body('evrak_tarihi')
+    .optional({ checkFalsy: true })
+    .isISO8601().withMessage('Geçersiz evrak tarihi formatı (YYYY-MM-DD)'),
   body('banka_adi')
     .optional({ checkFalsy: true })
     .trim()
     .isLength({ max: 100 }).withMessage('Banka adı çok uzun'),
   body('kesideci')
+    .optional({ checkFalsy: true })
     .trim()
-    .notEmpty().withMessage('Keşideci gerekli')
-    .isLength({ min: 2, max: 200 }).withMessage('Keşideci 2-200 karakter olmalı'),
+    .isLength({ max: 200 }).withMessage('Keşideci en fazla 200 karakter olmalı'),
   body('cari_id')
     .optional({ checkFalsy: true })
     .isInt({ min: 1 }).withMessage('Geçersiz cari ID'),
@@ -221,6 +224,7 @@ router.post('/',
         evrak_no,
         tutar,
         vade_tarihi,
+        evrak_tarihi,
         banka_adi,
         kesideci,
         cari_id,
@@ -233,6 +237,7 @@ router.post('/',
         evrak_no,
         tutar,
         vade_tarihi,
+        evrak_tarihi,
         banka_adi,
         kesideci,
         cari_id,
@@ -288,6 +293,7 @@ router.put('/:id',
         evrak_no,
         tutar,
         vade_tarihi,
+        evrak_tarihi,
         banka_adi,
         kesideci,
         cari_id,
@@ -299,6 +305,7 @@ router.put('/:id',
         evrak_no,
         tutar,
         vade_tarihi,
+        evrak_tarihi,
         banka_adi,
         kesideci,
         cari_id,

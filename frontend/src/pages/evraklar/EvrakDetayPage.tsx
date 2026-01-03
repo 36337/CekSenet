@@ -248,6 +248,9 @@ export function EvrakDetayPage() {
         <Divider className="my-4" />
 
         <DescriptionList>
+          <DescriptionTerm>Evrak No</DescriptionTerm>
+          <DescriptionDetails className="font-medium">{evrak.evrak_no}</DescriptionDetails>
+
           <DescriptionTerm>Evrak Tipi</DescriptionTerm>
           <DescriptionDetails>
             <Badge color={EVRAK_TIPI_COLORS[evrak.evrak_tipi] as any}>
@@ -255,26 +258,18 @@ export function EvrakDetayPage() {
             </Badge>
           </DescriptionDetails>
 
-          <DescriptionTerm>Evrak No</DescriptionTerm>
-          <DescriptionDetails className="font-medium">{evrak.evrak_no}</DescriptionDetails>
-
           <DescriptionTerm>Tutar</DescriptionTerm>
           <DescriptionDetails className="text-lg font-semibold text-zinc-900">
             {formatCurrency(evrak.tutar)}
           </DescriptionDetails>
 
-          <DescriptionTerm>Vade Tarihi</DescriptionTerm>
-          <DescriptionDetails>{formatDate(evrak.vade_tarihi)}</DescriptionDetails>
-
-          <DescriptionTerm>Durum</DescriptionTerm>
+          <DescriptionTerm>Evrak Tarihi</DescriptionTerm>
           <DescriptionDetails>
-            <Badge color={DURUM_COLORS[evrak.durum] as any}>
-              {DURUM_LABELS[evrak.durum]}
-            </Badge>
+            {evrak.evrak_tarihi ? formatDate(evrak.evrak_tarihi) : '-'}
           </DescriptionDetails>
 
-          <DescriptionTerm>Keşideci</DescriptionTerm>
-          <DescriptionDetails>{evrak.kesideci}</DescriptionDetails>
+          <DescriptionTerm>Vade Tarihi</DescriptionTerm>
+          <DescriptionDetails>{formatDate(evrak.vade_tarihi)}</DescriptionDetails>
 
           {evrak.banka_adi && (
             <>
@@ -282,6 +277,9 @@ export function EvrakDetayPage() {
               <DescriptionDetails>{evrak.banka_adi}</DescriptionDetails>
             </>
           )}
+
+          <DescriptionTerm>Keşideci</DescriptionTerm>
+          <DescriptionDetails>{evrak.kesideci || '-'}</DescriptionDetails>
 
           {evrak.cari_adi && (
             <>
@@ -300,6 +298,13 @@ export function EvrakDetayPage() {
               </DescriptionDetails>
             </>
           )}
+
+          <DescriptionTerm>Durum</DescriptionTerm>
+          <DescriptionDetails>
+            <Badge color={DURUM_COLORS[evrak.durum] as any}>
+              {DURUM_LABELS[evrak.durum]}
+            </Badge>
+          </DescriptionDetails>
 
           {evrak.notlar && (
             <>

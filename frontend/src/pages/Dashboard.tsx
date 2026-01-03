@@ -18,6 +18,7 @@ import {
   VadeBarChart,
   VadeUyarilariCompact,
   SonHareketler,
+  IPInfoCard,
 } from '@/components/dashboard'
 
 import {
@@ -233,6 +234,9 @@ export function DashboardPage() {
           onKartClick={handleKartClick}
         />
       </section>
+
+      {/* LAN Erişim Bilgisi - Sadece Admin */}
+      <IPInfoCard />
 
       {/* Grafikler ve Uyarılar Grid */}
       <div className="grid gap-6 lg:grid-cols-3">

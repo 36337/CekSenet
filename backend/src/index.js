@@ -24,6 +24,9 @@ const dashboardRoutes = require('./routes/dashboard');
 const raporlarRoutes = require('./routes/raporlar');
 const backupRoutes = require('./routes/backup');
 const settingsRoutes = require('./routes/settings');
+const systemRoutes = require('./routes/system');
+const bankalarRoutes = require('./routes/bankalar');
+const kurlarRoutes = require('./routes/kurlar');
 
 // Migration & Seed
 const { runMigrations } = require('./migrate');
@@ -85,6 +88,9 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/raporlar', raporlarRoutes);
 app.use('/api/backup', backupRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/system', systemRoutes);
+app.use('/api/bankalar', bankalarRoutes);
+app.use('/api/kurlar', kurlarRoutes);
 
 // ============================================
 // PRODUCTION: Static File Serving
