@@ -8,7 +8,7 @@ import { AuthProvider } from '@/contexts'
 import { ProtectedRoute, ApplicationLayout } from '@/components'
 import { AppInitializer } from '@/components/AppInitializer'
 import { LoginPage, SetupPage, DashboardPage, EvraklarPage, CarilerPage, RaporlarPage } from '@/pages'
-import { EvrakEklePage, EvrakDetayPage, EvrakDuzenlePage } from '@/pages/evraklar'
+import { EvrakEklePage, EvrakDetayPage, EvrakDuzenlePage, EvrakImportPage } from '@/pages/evraklar'
 import { CariEklePage, CariDetayPage, CariDuzenlePage } from '@/pages/cariler'
 import { KullanicilarPage, ProfilPage } from '@/pages/ayarlar'
 
@@ -57,6 +57,16 @@ function App() {
               <ProtectedRoute>
                 <ApplicationLayout>
                   <EvrakEklePage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/evraklar/import"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <EvrakImportPage />
                 </ApplicationLayout>
               </ProtectedRoute>
             }

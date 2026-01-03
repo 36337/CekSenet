@@ -44,3 +44,11 @@ backups/
 # Installer build files (large files)
 installer/build/
 installer/output/
+
+# Uploads (fotoğraflar) - klasör yapısını koru, içeriği hariç tut
+backend/uploads/**/*
+!backend/uploads/.gitkeep
+!backend/uploads/evraklar/
+!backend/uploads/evraklar/.gitkeep
+!backend/uploads/temp/
+!backend/uploads/temp/.gitkeep

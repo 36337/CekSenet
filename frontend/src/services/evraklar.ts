@@ -18,13 +18,17 @@ export interface Evrak {
   evrak_no: string
   tutar: number
   vade_tarihi: string
-  evrak_tarihi: string | null  // YENİ: Evrak/keşide tarihi (opsiyonel)
-  banka_adi: string | null
+  evrak_tarihi: string | null  // Evrak/keşide tarihi (opsiyonel)
+  banka_adi: string | null     // Eski alan (geriye uyumluluk)
+  banka_id: number | null      // YENİ: Banka ID (foreign key)
+  banka_adi_display: string | null  // YENİ: Gösterilecek banka adı (JOIN'den)
   kesideci: string | null      // Artık opsiyonel (boş olabilir)
   cari_id: number | null
   cari_adi: string | null
   durum: EvrakDurumu
   notlar: string | null
+  para_birimi: string          // YENİ: TRY, USD, EUR, GBP, CHF
+  doviz_kuru: number | null    // YENİ: Döviz kuru (TRY için null)
   created_by: number
   created_at: string
   updated_at: string
@@ -51,12 +55,15 @@ export interface EvrakFormData {
   evrak_no: string
   tutar: number | string
   vade_tarihi: string
-  evrak_tarihi?: string        // YENİ: Evrak/keşide tarihi (opsiyonel)
-  banka_adi?: string
+  evrak_tarihi?: string        // Evrak/keşide tarihi (opsiyonel)
+  banka_adi?: string           // Eski alan (geriye uyumluluk)
+  banka_id?: number | null     // YENİ: Banka ID
   kesideci?: string            // Artık opsiyonel
   cari_id?: number | null
   durum?: EvrakDurumu
   notlar?: string
+  para_birimi?: string         // YENİ: Para birimi (default: TRY)
+  doviz_kuru?: number | null   // YENİ: Döviz kuru
 }
 
 export interface EvrakFilters {
@@ -178,6 +185,9 @@ export async function createEvrak(data: EvrakFormData): Promise<{ message: strin
     ...data,
     tutar: typeof data.tutar === 'string' ? parseFloat(data.tutar) : data.tutar,
     cari_id: data.cari_id || null,
+    banka_id: data.banka_id || null,
+    para_birimi: data.para_birimi || 'TRY',
+    doviz_kuru: data.doviz_kuru || null,
   })
   return response.data
 }
@@ -190,6 +200,9 @@ export async function updateEvrak(id: number, data: EvrakFormData): Promise<{ me
     ...data,
     tutar: typeof data.tutar === 'string' ? parseFloat(data.tutar) : data.tutar,
     cari_id: data.cari_id || null,
+    banka_id: data.banka_id || null,
+    para_birimi: data.para_birimi || 'TRY',
+    doviz_kuru: data.doviz_kuru || null,
   })
   return response.data
 }

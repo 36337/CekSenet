@@ -27,6 +27,7 @@ const settingsRoutes = require('./routes/settings');
 const systemRoutes = require('./routes/system');
 const bankalarRoutes = require('./routes/bankalar');
 const kurlarRoutes = require('./routes/kurlar');
+const importRoutes = require('./routes/import');
 
 // Migration & Seed
 const { runMigrations } = require('./migrate');
@@ -91,6 +92,37 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/system', systemRoutes);
 app.use('/api/bankalar', bankalarRoutes);
 app.use('/api/kurlar', kurlarRoutes);
+app.use('/api/import', importRoutes);
+
+// ============================================
+// UPLOADS: Static File Serving (Fotoğraflar)
+// ============================================
+// Evrak fotoğrafları için static file serving
+// URL: /uploads/evraklar/{evrak_id}/{dosya_adi}
+const uploadsPath = path.join(__dirname, '../uploads');
+app.use('/uploads', express.static(uploadsPath, {
+  // Güvenlik ayarları
+  dotfiles: 'deny',           // .htaccess gibi gizli dosyaları engelle
+  index: false,               // Dizin listesini gösterme
+  maxAge: '1d',               // Cache süresi (1 gün)
+  etag: true,                 // ETag desteği
+  lastModified: true,         // Last-Modified header
+  // MIME type ayarları
+  setHeaders: (res, filePath) => {
+    // Sadece resim dosyalarına izin ver
+    const ext = path.extname(filePath).toLowerCase();
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
+    
+    if (!allowedExtensions.includes(ext)) {
+      // İzin verilmeyen dosya tipi
+      res.status(403);
+      return;
+    }
+    
+    // Cache-Control header
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 gün
+  }
+}));
 
 // ============================================
 // PRODUCTION: Static File Serving
@@ -105,6 +137,10 @@ if (config.isProduction) {
   app.use((req, res, next) => {
     // API istekleri için 404 handler'a devam et
     if (req.path.startsWith('/api')) {
+      return next();
+    }
+    // Uploads istekleri için static handler'a bırak
+    if (req.path.startsWith('/uploads')) {
       return next();
     }
     // Static dosya istekleri için (zaten serve edildi, bulunamazsa 404)

@@ -4,6 +4,7 @@
  */
 
 const db = require('./db');
+const { deleteEvrakFolder } = require('../middleware/upload');
 
 // ============================================
 // DURUM AKIŞ KURALLARI
@@ -161,20 +162,31 @@ function getAll(filters = {}) {
   const sortField = allowedSortFields.includes(sort) ? sort : 'vade_tarihi';
   const sortOrder = order.toLowerCase() === 'desc' ? 'DESC' : 'ASC';
   
-  // Ana sorgu (cari bilgisi ile)
+  // Ana sorgu (cari ve banka bilgisi ile)
   const dataQuery = `
     SELECT 
       e.*,
       c.ad_soyad as cari_adi,
-      c.tip as cari_tipi
+      c.tip as cari_tipi,
+      b.ad as banka_adi_joined
     FROM evraklar e
     LEFT JOIN cariler c ON e.cari_id = c.id
+    LEFT JOIN bankalar b ON e.banka_id = b.id
     WHERE ${whereClause}
     ORDER BY e.${sortField} ${sortOrder}
     LIMIT ? OFFSET ?
   `;
   
   const data = db.prepare(dataQuery).all(...params, limit, offset);
+  
+  // Her evrak için banka_adi_display hesapla
+  data.forEach(evrak => {
+    if (evrak.banka_id && evrak.banka_adi_joined) {
+      evrak.banka_adi_display = evrak.banka_adi_joined;
+    } else {
+      evrak.banka_adi_display = evrak.banka_adi || null;
+    }
+  });
   
   return {
     data,
@@ -188,7 +200,7 @@ function getAll(filters = {}) {
 }
 
 /**
- * ID ile evrak getir (cari bilgisi dahil)
+ * ID ile evrak getir (cari ve banka bilgisi dahil)
  * @param {number} id - Evrak ID
  * @returns {Object|null} Evrak objesi veya null
  */
@@ -199,13 +211,26 @@ function getById(id) {
       c.ad_soyad as cari_adi,
       c.tip as cari_tipi,
       c.telefon as cari_telefon,
-      u.ad_soyad as olusturan_adi
+      u.ad_soyad as olusturan_adi,
+      b.ad as banka_adi_joined
     FROM evraklar e
     LEFT JOIN cariler c ON e.cari_id = c.id
     LEFT JOIN users u ON e.created_by = u.id
+    LEFT JOIN bankalar b ON e.banka_id = b.id
     WHERE e.id = ?
   `;
-  return db.prepare(query).get(id) || null;
+  const result = db.prepare(query).get(id);
+  
+  if (!result) return null;
+  
+  // Banka adı: önce banka_id'den gelen, yoksa eski banka_adi alanı
+  if (result.banka_id && result.banka_adi_joined) {
+    result.banka_adi_display = result.banka_adi_joined;
+  } else {
+    result.banka_adi_display = result.banka_adi || null;
+  }
+  
+  return result;
 }
 
 /**
@@ -220,20 +245,23 @@ function create(data, userId) {
     evrak_no, 
     tutar, 
     vade_tarihi,
-    evrak_tarihi,  // YENİ: Evrak tarihi (opsiyonel)
-    banka_adi, 
+    evrak_tarihi,  // Evrak tarihi (opsiyonel)
+    banka_adi,     // Geriye uyumluluk için korunuyor
+    banka_id,      // YENİ: Banka ID (opsiyonel)
     kesideci,      // Artık opsiyonel (boş string kabul edilir)
     cari_id, 
     durum = 'portfoy',
-    notlar 
+    notlar,
+    para_birimi = 'TRY',  // YENİ: Para birimi (default TRY)
+    doviz_kuru            // YENİ: Döviz kuru (TRY dışında zorunlu)
   } = data;
   
   // Transaction başlat
   const insertEvrak = db.transaction(() => {
     // Evrak ekle (updated_at de set edilmeli)
     const evrakQuery = `
-      INSERT INTO evraklar (evrak_tipi, evrak_no, tutar, vade_tarihi, evrak_tarihi, banka_adi, kesideci, cari_id, durum, notlar, created_by, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      INSERT INTO evraklar (evrak_tipi, evrak_no, tutar, vade_tarihi, evrak_tarihi, banka_adi, banka_id, kesideci, cari_id, durum, notlar, para_birimi, doviz_kuru, created_by, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
     `;
     
     const evrakResult = db.prepare(evrakQuery).run(
@@ -241,12 +269,15 @@ function create(data, userId) {
       evrak_no,
       parseFloat(tutar),
       vade_tarihi,
-      evrak_tarihi || null,           // YENİ: evrak_tarihi (nullable)
+      evrak_tarihi || null,
       banka_adi || null,
-      kesideci || '',                  // Boş string kabul (DB NOT NULL)
+      banka_id || null,               // YENİ: banka_id
+      kesideci || '',                 // Boş string kabul (DB NOT NULL)
       cari_id || null,
       durum,
       notlar || null,
+      para_birimi || 'TRY',           // YENİ: para_birimi
+      doviz_kuru || null,             // YENİ: doviz_kuru
       userId
     );
     
@@ -290,11 +321,14 @@ function update(id, data, userId) {
     evrak_no, 
     tutar, 
     vade_tarihi,
-    evrak_tarihi,  // YENİ: Evrak tarihi (opsiyonel)
-    banka_adi, 
+    evrak_tarihi,  // Evrak tarihi (opsiyonel)
+    banka_adi,     // Geriye uyumluluk için korunuyor
+    banka_id,      // YENİ: Banka ID (opsiyonel)
     kesideci,      // Artık opsiyonel
     cari_id, 
-    notlar 
+    notlar,
+    para_birimi,   // YENİ: Para birimi
+    doviz_kuru     // YENİ: Döviz kuru
   } = data;
   
   // NOT: Durum bu fonksiyonla güncellenemez, updateDurum kullanılmalı
@@ -307,9 +341,12 @@ function update(id, data, userId) {
       vade_tarihi = ?,
       evrak_tarihi = ?,
       banka_adi = ?,
+      banka_id = ?,
       kesideci = ?,
       cari_id = ?,
       notlar = ?,
+      para_birimi = ?,
+      doviz_kuru = ?,
       updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
   `;
@@ -319,11 +356,14 @@ function update(id, data, userId) {
     evrak_no,
     parseFloat(tutar),
     vade_tarihi,
-    evrak_tarihi || null,           // YENİ: evrak_tarihi (nullable)
+    evrak_tarihi || null,
     banka_adi || null,
-    kesideci || '',                  // Boş string kabul (DB NOT NULL)
+    banka_id || null,               // YENİ: banka_id
+    kesideci || '',                 // Boş string kabul (DB NOT NULL)
     cari_id || null,
     notlar || null,
+    para_birimi || 'TRY',           // YENİ: para_birimi
+    doviz_kuru || null,             // YENİ: doviz_kuru
     id
   );
   
@@ -419,7 +459,7 @@ function bulkUpdateDurum(ids, yeniDurum, aciklama, userId) {
 }
 
 /**
- * Evrak sil
+ * Evrak sil (fotoğraf dosyaları dahil)
  * @param {number} id - Evrak ID
  * @returns {Object} { success: boolean, message: string }
  */
@@ -430,7 +470,17 @@ function remove(id) {
     return { success: false, message: 'Evrak bulunamadı' };
   }
   
-  // Evrakı sil (CASCADE ile hareketler de silinir)
+  // Fotoğraf dosyalarını diskten sil
+  // (DB kayıtları CASCADE ile otomatik silinecek)
+  try {
+    deleteEvrakFolder(id);
+  } catch (error) {
+    // Fotoğraf silme hatası evrak silmeyi engellemesin
+    // Sadece log'a yaz
+    console.error(`Evrak fotoğrafları silinemedi (evrak_id: ${id}):`, error.message);
+  }
+  
+  // Evrakı sil (CASCADE ile hareketler ve fotoğraf kayıtları da silinir)
   const deleteQuery = `DELETE FROM evraklar WHERE id = ?`;
   db.prepare(deleteQuery).run(id);
   

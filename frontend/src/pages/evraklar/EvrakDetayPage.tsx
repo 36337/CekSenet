@@ -43,6 +43,7 @@ import {
   getEvrak,
   getEvrakHareketler,
   updateEvrakDurum,
+  getFotograflar,
   DURUM_LABELS,
   DURUM_COLORS,
   EVRAK_TIPI_LABELS,
@@ -51,8 +52,16 @@ import {
   type EvrakDetay,
   type EvrakHareket,
   type EvrakDurumu,
+  type EvrakFotograf,
 } from '@/services'
-import { formatCurrency, formatDate } from '@/services/dashboard'
+import { FotografYukle, FotografGaleri } from '@/components/evrak'
+import { formatDate } from '@/services/dashboard'
+import {
+  formatCurrency,
+  formatExchangeRate,
+  getCurrencyName,
+  isTRY,
+} from '@/utils/currency'
 
 // ============================================
 // Component
@@ -66,6 +75,7 @@ export function EvrakDetayPage() {
   // State
   const [evrak, setEvrak] = useState<EvrakDetay | null>(null)
   const [hareketler, setHareketler] = useState<EvrakHareket[]>([])
+  const [fotograflar, setFotograflar] = useState<EvrakFotograf[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -94,14 +104,16 @@ export function EvrakDetayPage() {
     setError(null)
 
     try {
-      // Paralel olarak evrak ve hareketleri getir
-      const [evrakData, hareketlerData] = await Promise.all([
+      // Paralel olarak evrak, hareketler ve fotoğrafları getir
+      const [evrakData, hareketlerData, fotograflarData] = await Promise.all([
         getEvrak(evrakId),
         getEvrakHareketler(evrakId),
+        getFotograflar(evrakId),
       ])
 
       setEvrak(evrakData)
       setHareketler(hareketlerData.hareketler)
+      setFotograflar(fotograflarData.fotograflar)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Evrak yüklenirken hata oluştu')
     } finally {
@@ -153,6 +165,20 @@ export function EvrakDetayPage() {
   }
 
   // ============================================
+  // Fotoğraf İşlemleri
+  // ============================================
+
+  const handleFotografUploadComplete = useCallback((yeniFotograflar: EvrakFotograf[]) => {
+    // Yeni fotoğrafları listeye ekle (başa)
+    setFotograflar((prev) => [...yeniFotograflar, ...prev])
+  }, [])
+
+  const handleFotografDelete = useCallback((fotografId: number) => {
+    // Silinen fotoğrafı listeden çıkar
+    setFotograflar((prev) => prev.filter((f) => f.id !== fotografId))
+  }, [])
+
+  // ============================================
   // Render Helpers
   // ============================================
 
@@ -165,6 +191,13 @@ export function EvrakDetayPage() {
       hour: '2-digit',
       minute: '2-digit',
     })
+  }
+
+  /**
+   * Banka adını göster (önce banka_adi_display, sonra banka_adi)
+   */
+  const getBankaAdi = (evrak: EvrakDetay): string | null => {
+    return evrak.banka_adi_display || evrak.banka_adi || null
   }
 
   // ============================================
@@ -204,6 +237,10 @@ export function EvrakDetayPage() {
   // Render - Main
   // ============================================
 
+  const bankaAdi = getBankaAdi(evrak)
+  const paraBirimi = evrak.para_birimi || 'TRY'
+  const isDoviz = !isTRY(paraBirimi)
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -223,7 +260,7 @@ export function EvrakDetayPage() {
               </Badge>
             </div>
             <Text className="mt-1">
-              {formatCurrency(evrak.tutar)} • Vade: {formatDate(evrak.vade_tarihi)}
+              {formatCurrency(evrak.tutar, paraBirimi)} • Vade: {formatDate(evrak.vade_tarihi)}
             </Text>
           </div>
         </div>
@@ -258,10 +295,33 @@ export function EvrakDetayPage() {
             </Badge>
           </DescriptionDetails>
 
+          <DescriptionTerm>Para Birimi</DescriptionTerm>
+          <DescriptionDetails>{getCurrencyName(paraBirimi)}</DescriptionDetails>
+
           <DescriptionTerm>Tutar</DescriptionTerm>
           <DescriptionDetails className="text-lg font-semibold text-zinc-900">
-            {formatCurrency(evrak.tutar)}
+            {isDoviz ? (
+              <span>
+                {formatCurrency(evrak.tutar, paraBirimi)}
+                {evrak.doviz_kuru && (
+                  <span className="ml-2 text-sm font-normal text-zinc-500">
+                    ≈ {formatCurrency(evrak.tutar * evrak.doviz_kuru, 'TRY')}
+                  </span>
+                )}
+              </span>
+            ) : (
+              formatCurrency(evrak.tutar, 'TRY')
+            )}
           </DescriptionDetails>
+
+          {isDoviz && (
+            <>
+              <DescriptionTerm>Döviz Kuru</DescriptionTerm>
+              <DescriptionDetails>
+                {evrak.doviz_kuru ? formatExchangeRate(evrak.doviz_kuru, paraBirimi) : '-'}
+              </DescriptionDetails>
+            </>
+          )}
 
           <DescriptionTerm>Evrak Tarihi</DescriptionTerm>
           <DescriptionDetails>
@@ -271,10 +331,10 @@ export function EvrakDetayPage() {
           <DescriptionTerm>Vade Tarihi</DescriptionTerm>
           <DescriptionDetails>{formatDate(evrak.vade_tarihi)}</DescriptionDetails>
 
-          {evrak.banka_adi && (
+          {bankaAdi && (
             <>
               <DescriptionTerm>Banka</DescriptionTerm>
-              <DescriptionDetails>{evrak.banka_adi}</DescriptionDetails>
+              <DescriptionDetails>{bankaAdi}</DescriptionDetails>
             </>
           )}
 
@@ -319,6 +379,34 @@ export function EvrakDetayPage() {
           <DescriptionTerm>Son Güncelleme</DescriptionTerm>
           <DescriptionDetails>{formatDateTime(evrak.updated_at)}</DescriptionDetails>
         </DescriptionList>
+      </div>
+
+      {/* Fotoğraflar */}
+      <div className="rounded-lg border border-zinc-200 bg-white p-6">
+        <Heading level={2} className="text-lg">
+          Fotoğraflar
+          {fotograflar.length > 0 && (
+            <span className="ml-2 text-sm font-normal text-zinc-500">
+              ({fotograflar.length})
+            </span>
+          )}
+        </Heading>
+        <Divider className="my-4" />
+
+        {/* Fotoğraf Yükleme */}
+        <div className="mb-6">
+          <FotografYukle
+            evrakId={evrakId}
+            onUploadComplete={handleFotografUploadComplete}
+          />
+        </div>
+
+        {/* Fotoğraf Galerisi */}
+        <FotografGaleri
+          evrakId={evrakId}
+          fotograflar={fotograflar}
+          onDelete={handleFotografDelete}
+        />
       </div>
 
       {/* Hareket Geçmişi */}

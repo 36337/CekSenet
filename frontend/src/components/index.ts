@@ -20,3 +20,9 @@ export { SonHareketler, SonHareketlerCompact } from './dashboard'
 
 // UI Components (Catalyst)
 export * from './ui'
+
+// Modals
+export * from './modals'
+
+// Evrak
+export * from './evrak'

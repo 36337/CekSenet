@@ -11,14 +11,23 @@ import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Field, FieldGroup, Label, Description, ErrorMessage } from '@/components/ui/fieldset'
-import { ArrowLeftIcon, DocumentPlusIcon } from '@heroicons/react/20/solid'
+import { ArrowLeftIcon, DocumentPlusIcon, ArrowPathIcon } from '@heroicons/react/20/solid'
+import { BankaEkleModal } from '@/components/modals'
 import {
   createEvrak,
   getCarilerForSelect,
+  getBankalar,
+  getKurSafe,
   DURUM_LABELS,
   EVRAK_TIPI_LABELS,
   type EvrakFormData,
+  type Banka,
 } from '@/services'
+import {
+  PARA_BIRIMI_OPTIONS,
+  getCurrencySymbol,
+  isTRY,
+} from '@/utils/currency'
 
 // ============================================
 // Types
@@ -30,9 +39,11 @@ interface FormErrors {
   tutar?: string
   vade_tarihi?: string
   evrak_tarihi?: string
-  banka_adi?: string
+  banka_id?: string
   kesideci?: string
   cari_id?: string
+  para_birimi?: string
+  doviz_kuru?: string
   notlar?: string
   general?: string
 }
@@ -57,11 +68,13 @@ export function EvrakEklePage() {
     tutar: '',
     vade_tarihi: '',
     evrak_tarihi: '',
-    banka_adi: '',
+    banka_id: null,
     kesideci: '',
     cari_id: null,
     durum: 'portfoy',
     notlar: '',
+    para_birimi: 'TRY',
+    doviz_kuru: null,
   })
 
   // UI state
@@ -69,9 +82,18 @@ export function EvrakEklePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [cariler, setCariler] = useState<CariOption[]>([])
   const [isLoadingCariler, setIsLoadingCariler] = useState(true)
+  
+  // Banka state
+  const [bankalar, setBankalar] = useState<Banka[]>([])
+  const [isLoadingBankalar, setIsLoadingBankalar] = useState(true)
+  const [isBankaModalOpen, setIsBankaModalOpen] = useState(false)
+  
+  // Kur state
+  const [isLoadingKur, setIsLoadingKur] = useState(false)
+  const [kurHatasi, setKurHatasi] = useState<string | null>(null)
 
   // ============================================
-  // Load Cariler for Select
+  // Load Initial Data
   // ============================================
 
   useEffect(() => {
@@ -87,6 +109,55 @@ export function EvrakEklePage() {
     }
     loadCariler()
   }, [])
+
+  useEffect(() => {
+    async function loadBankalar() {
+      try {
+        const data = await getBankalar()
+        setBankalar(data)
+      } catch (err) {
+        console.error('Bankalar yüklenemedi:', err)
+      } finally {
+        setIsLoadingBankalar(false)
+      }
+    }
+    loadBankalar()
+  }, [])
+
+  // ============================================
+  // Kur İşlemleri
+  // ============================================
+
+  const fetchKur = async (paraBirimi: string) => {
+    if (isTRY(paraBirimi)) {
+      setFormData(prev => ({ ...prev, doviz_kuru: null }))
+      setKurHatasi(null)
+      return
+    }
+
+    setIsLoadingKur(true)
+    setKurHatasi(null)
+
+    try {
+      const kur = await getKurSafe(paraBirimi)
+      if (kur !== null) {
+        setFormData(prev => ({ ...prev, doviz_kuru: kur }))
+      } else {
+        setKurHatasi('Kur alınamadı, manuel giriniz')
+      }
+    } catch (err) {
+      setKurHatasi('Kur alınamadı, manuel giriniz')
+    } finally {
+      setIsLoadingKur(false)
+    }
+  }
+
+  // Para birimi değiştiğinde kuru otomatik getir
+  useEffect(() => {
+    if (formData.para_birimi && !isTRY(formData.para_birimi)) {
+      fetchKur(formData.para_birimi)
+    }
+  }, [formData.para_birimi])
 
   // ============================================
   // Validation
@@ -122,14 +193,16 @@ export function EvrakEklePage() {
       newErrors.vade_tarihi = 'Vade tarihi seçiniz'
     }
 
-    // Keşideci - artık opsiyonel, sadece max karakter kontrolü
-    if (formData.kesideci && formData.kesideci.length > 200) {
-      newErrors.kesideci = 'Keşideci en fazla 200 karakter olabilir'
+    // Döviz kuru (TRY dışında zorunlu)
+    if (!isTRY(formData.para_birimi)) {
+      if (!formData.doviz_kuru || formData.doviz_kuru <= 0) {
+        newErrors.doviz_kuru = 'Döviz kuru gerekli'
+      }
     }
 
-    // Banka adı (opsiyonel ama max 100 karakter)
-    if (formData.banka_adi && formData.banka_adi.length > 100) {
-      newErrors.banka_adi = 'Banka adı en fazla 100 karakter olabilir'
+    // Keşideci - opsiyonel, sadece max karakter kontrolü
+    if (formData.kesideci && formData.kesideci.length > 200) {
+      newErrors.kesideci = 'Keşideci en fazla 200 karakter olabilir'
     }
 
     // Notlar (opsiyonel ama max 1000 karakter)
@@ -149,15 +222,41 @@ export function EvrakEklePage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'cari_id' ? (value ? parseInt(value) : null) : value,
-    }))
+    
+    if (name === 'cari_id' || name === 'banka_id') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value ? parseInt(value) : null,
+      }))
+    } else if (name === 'doviz_kuru') {
+      setFormData(prev => ({
+        ...prev,
+        doviz_kuru: value ? parseFloat(value) : null,
+      }))
+    } else if (name === 'para_birimi') {
+      // Para birimi değişince kuru sıfırla
+      setFormData(prev => ({
+        ...prev,
+        para_birimi: value,
+        doviz_kuru: value === 'TRY' ? null : prev.doviz_kuru,
+      }))
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+      }))
+    }
     
     // Clear field error on change
     if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }))
+      setErrors(prev => ({ ...prev, [name]: undefined }))
     }
+  }
+
+  const handleBankaEklendi = (banka: Banka) => {
+    // Yeni bankayı listeye ekle ve seç
+    setBankalar(prev => [...prev, banka].sort((a, b) => a.ad.localeCompare(b.ad, 'tr')))
+    setFormData(prev => ({ ...prev, banka_id: banka.id }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -186,6 +285,9 @@ export function EvrakEklePage() {
   // ============================================
   // Render
   // ============================================
+
+  const paraBirimiSembol = getCurrencySymbol(formData.para_birimi)
+  const isDoviz = !isTRY(formData.para_birimi)
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -250,10 +352,26 @@ export function EvrakEklePage() {
               </Field>
             </div>
 
-            {/* Tutar & Evrak Tarihi */}
+            {/* Para Birimi & Tutar */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <Field>
-                <Label>Tutar (₺) *</Label>
+                <Label>Para Birimi</Label>
+                <Select
+                  name="para_birimi"
+                  value={formData.para_birimi || 'TRY'}
+                  onChange={handleChange}
+                >
+                  {PARA_BIRIMI_OPTIONS.map(opt => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </Select>
+                <Description>Varsayılan: Türk Lirası</Description>
+              </Field>
+
+              <Field>
+                <Label>Tutar ({paraBirimiSembol}) *</Label>
                 <Input
                   name="tutar"
                   type="number"
@@ -266,7 +384,47 @@ export function EvrakEklePage() {
                 />
                 {errors.tutar && <ErrorMessage>{errors.tutar}</ErrorMessage>}
               </Field>
+            </div>
 
+            {/* Döviz Kuru (sadece döviz seçiliyse) */}
+            {isDoviz && (
+              <Field>
+                <Label>Döviz Kuru (₺) *</Label>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Input
+                      name="doviz_kuru"
+                      type="number"
+                      step="0.0001"
+                      min="0.0001"
+                      value={formData.doviz_kuru || ''}
+                      onChange={handleChange}
+                      placeholder="0.0000"
+                      invalid={!!errors.doviz_kuru}
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    outline
+                    onClick={() => fetchKur(formData.para_birimi || 'USD')}
+                    disabled={isLoadingKur}
+                    title="TCMB'den güncel kuru al"
+                  >
+                    <ArrowPathIcon className={`h-5 w-5 ${isLoadingKur ? 'animate-spin' : ''}`} />
+                  </Button>
+                </div>
+                {errors.doviz_kuru && <ErrorMessage>{errors.doviz_kuru}</ErrorMessage>}
+                {kurHatasi && !errors.doviz_kuru && (
+                  <Description className="text-amber-600">{kurHatasi}</Description>
+                )}
+                {!kurHatasi && !errors.doviz_kuru && (
+                  <Description>1 {formData.para_birimi} = ₺{formData.doviz_kuru?.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 4 }) || '?'}</Description>
+                )}
+              </Field>
+            )}
+
+            {/* Evrak Tarihi & Vade Tarihi */}
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <Field>
                 <Label>Evrak Tarihi</Label>
                 <Input
@@ -279,10 +437,7 @@ export function EvrakEklePage() {
                 {errors.evrak_tarihi && <ErrorMessage>{errors.evrak_tarihi}</ErrorMessage>}
                 <Description>Evrakın düzenlenme/keşide tarihi</Description>
               </Field>
-            </div>
 
-            {/* Vade Tarihi & Banka */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <Field>
                 <Label>Vade Tarihi *</Label>
                 <Input
@@ -294,24 +449,43 @@ export function EvrakEklePage() {
                 />
                 {errors.vade_tarihi && <ErrorMessage>{errors.vade_tarihi}</ErrorMessage>}
               </Field>
-
-              <Field>
-                <Label>Banka Adı</Label>
-                <Input
-                  name="banka_adi"
-                  type="text"
-                  value={formData.banka_adi || ''}
-                  onChange={handleChange}
-                  placeholder="Örn: Garanti Bankası"
-                  invalid={!!errors.banka_adi}
-                />
-                {errors.banka_adi && <ErrorMessage>{errors.banka_adi}</ErrorMessage>}
-                <Description>Çekler için banka bilgisi</Description>
-              </Field>
             </div>
 
-            {/* Keşideci & Cari */}
+            {/* Banka & Keşideci */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <Field>
+                <Label>Banka</Label>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Select
+                      name="banka_id"
+                      value={formData.banka_id || ''}
+                      onChange={handleChange}
+                      disabled={isLoadingBankalar}
+                    >
+                      <option value="">
+                        {isLoadingBankalar ? 'Yükleniyor...' : 'Banka seçiniz'}
+                      </option>
+                      {bankalar.map(banka => (
+                        <option key={banka.id} value={banka.id}>
+                          {banka.ad}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+                  <Button
+                    type="button"
+                    outline
+                    onClick={() => setIsBankaModalOpen(true)}
+                    title="Yeni banka ekle"
+                  >
+                    +
+                  </Button>
+                </div>
+                {errors.banka_id && <ErrorMessage>{errors.banka_id}</ErrorMessage>}
+                <Description>Çekler için banka bilgisi</Description>
+              </Field>
+
               <Field>
                 <Label>Keşideci</Label>
                 <Input
@@ -324,7 +498,10 @@ export function EvrakEklePage() {
                 />
                 {errors.kesideci && <ErrorMessage>{errors.kesideci}</ErrorMessage>}
               </Field>
+            </div>
 
+            {/* Cari & Durum */}
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <Field>
                 <Label>Cari Hesap</Label>
                 <Select
@@ -344,10 +521,7 @@ export function EvrakEklePage() {
                 </Select>
                 <Description>İlişkili cari hesap</Description>
               </Field>
-            </div>
 
-            {/* Durum & Notlar */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <Field>
                 <Label>Durum</Label>
                 <Select
@@ -400,6 +574,13 @@ export function EvrakEklePage() {
           </Button>
         </div>
       </form>
+
+      {/* Banka Ekle Modal */}
+      <BankaEkleModal
+        isOpen={isBankaModalOpen}
+        onClose={() => setIsBankaModalOpen(false)}
+        onSuccess={handleBankaEklendi}
+      />
     </div>
   )
 }

@@ -26,6 +26,7 @@ import {
   DocumentTextIcon,
   ChevronUpIcon,
   ChevronDownIcon,
+  DocumentArrowUpIcon,
 } from '@heroicons/react/20/solid'
 import {
   getEvraklar,
@@ -38,7 +39,8 @@ import {
   type EvrakDurumu,
   type EvrakTipi,
 } from '@/services'
-import { formatCurrency, formatDate } from '@/services/dashboard'
+import { formatDate } from '@/services/dashboard'
+import { formatCurrency, isTRY } from '@/utils/currency'
 
 // ============================================
 // Types
@@ -74,6 +76,23 @@ const TIP_OPTIONS: Array<{ value: EvrakTipi | ''; label: string }> = [
 ]
 
 const LIMIT_OPTIONS = [10, 25, 50, 100]
+
+// ============================================
+// Helper Functions
+// ============================================
+
+/**
+ * Döviz kurunu formatla
+ */
+function formatKur(kur: number | null | undefined, paraBirimi: string): string {
+  if (isTRY(paraBirimi)) return '-'
+  if (!kur) return '-'
+  
+  return kur.toLocaleString('tr-TR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  })
+}
 
 // ============================================
 // Component
@@ -238,10 +257,16 @@ export function EvraklarPage() {
               : 'Çek ve senet listesi'}
           </Text>
         </div>
-        <Button color="blue" onClick={() => navigate('/evraklar/yeni')}>
-          <PlusIcon className="h-5 w-5" />
-          Yeni Evrak
-        </Button>
+        <div className="flex gap-2">
+          <Button outline onClick={() => navigate('/evraklar/import')}>
+            <DocumentArrowUpIcon className="h-5 w-5" />
+            Excel Import
+          </Button>
+          <Button color="blue" onClick={() => navigate('/evraklar/yeni')}>
+            <PlusIcon className="h-5 w-5" />
+            Yeni Evrak
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -380,6 +405,7 @@ export function EvraklarPage() {
                   <TableHeader>
                     <SortableHeader field="vade_tarihi">Valör</SortableHeader>
                   </TableHeader>
+                  <TableHeader>Döviz Kuru</TableHeader>
                   <TableHeader>Keşideci</TableHeader>
                   <TableHeader className="text-right">İşlem</TableHeader>
                 </TableRow>
@@ -402,12 +428,15 @@ export function EvraklarPage() {
                     </TableCell>
                     <TableCell className="font-medium">{evrak.evrak_no}</TableCell>
                     <TableCell className="font-medium text-zinc-900">
-                      {formatCurrency(evrak.tutar)}
+                      {formatCurrency(evrak.tutar, evrak.para_birimi || 'TRY')}
                     </TableCell>
                     <TableCell className="text-zinc-600">
                       {evrak.evrak_tarihi ? formatDate(evrak.evrak_tarihi) : '-'}
                     </TableCell>
                     <TableCell>{formatDate(evrak.vade_tarihi)}</TableCell>
+                    <TableCell className="text-zinc-600">
+                      {formatKur(evrak.doviz_kuru, evrak.para_birimi || 'TRY')}
+                    </TableCell>
                     <TableCell className="text-zinc-600">
                       {evrak.kesideci || '-'}
                     </TableCell>

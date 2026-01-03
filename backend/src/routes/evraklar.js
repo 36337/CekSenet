@@ -7,8 +7,15 @@ const express = require('express');
 const { body, param, query, validationResult } = require('express-validator');
 
 const Evraklar = require('../models/evraklar');
+const EvrakFotograflar = require('../models/evrakFotograflar');
 const logger = require('../utils/logger');
 const { authenticate, requireAdmin } = require('../middleware/auth');
+const { 
+  upload, 
+  processUploadedFile, 
+  deleteFiles, 
+  handleUploadError 
+} = require('../middleware/upload');
 
 const router = express.Router();
 
@@ -18,6 +25,9 @@ router.use(authenticate);
 // ============================================
 // VALIDATION KURALLARI (Reusable)
 // ============================================
+
+// Geçerli para birimleri
+const GECERLI_PARA_BIRIMLERI = ['TRY', 'USD', 'EUR', 'GBP', 'CHF'];
 
 const evrakValidationRules = [
   body('evrak_tipi')
@@ -40,6 +50,9 @@ const evrakValidationRules = [
     .optional({ checkFalsy: true })
     .trim()
     .isLength({ max: 100 }).withMessage('Banka adı çok uzun'),
+  body('banka_id')
+    .optional({ checkFalsy: true })
+    .isInt({ min: 1 }).withMessage('Geçersiz banka ID'),
   body('kesideci')
     .optional({ checkFalsy: true })
     .trim()
@@ -50,7 +63,23 @@ const evrakValidationRules = [
   body('notlar')
     .optional({ checkFalsy: true })
     .trim()
-    .isLength({ max: 1000 }).withMessage('Notlar çok uzun')
+    .isLength({ max: 1000 }).withMessage('Notlar çok uzun'),
+  // YENİ: Para birimi validation
+  body('para_birimi')
+    .optional({ checkFalsy: true })
+    .isIn(GECERLI_PARA_BIRIMLERI).withMessage(`Para birimi ${GECERLI_PARA_BIRIMLERI.join(', ')} olmalı`),
+  // YENİ: Döviz kuru validation (TRY dışında zorunlu)
+  body('doviz_kuru')
+    .optional({ checkFalsy: true })
+    .isFloat({ min: 0.0001 }).withMessage('Döviz kuru pozitif bir sayı olmalı'),
+  // Custom validation: Döviz seçiliyse kur zorunlu
+  body('doviz_kuru').custom((value, { req }) => {
+    const paraBirimi = req.body.para_birimi;
+    if (paraBirimi && paraBirimi !== 'TRY' && !value) {
+      throw new Error('Döviz seçildiğinde kur girilmesi zorunludur');
+    }
+    return true;
+  })
 ];
 
 // ============================================
@@ -226,10 +255,13 @@ router.post('/',
         vade_tarihi,
         evrak_tarihi,
         banka_adi,
+        banka_id,      // YENİ
         kesideci,
         cari_id,
         durum,
-        notlar
+        notlar,
+        para_birimi,   // YENİ
+        doviz_kuru     // YENİ
       } = req.body;
 
       const evrak = Evraklar.create({
@@ -239,10 +271,13 @@ router.post('/',
         vade_tarihi,
         evrak_tarihi,
         banka_adi,
+        banka_id,      // YENİ
         kesideci,
         cari_id,
         durum,
-        notlar
+        notlar,
+        para_birimi,   // YENİ
+        doviz_kuru     // YENİ
       }, req.user.id);
 
       logger.info('Evrak created', {
@@ -295,9 +330,12 @@ router.put('/:id',
         vade_tarihi,
         evrak_tarihi,
         banka_adi,
+        banka_id,      // YENİ
         kesideci,
         cari_id,
-        notlar
+        notlar,
+        para_birimi,   // YENİ
+        doviz_kuru     // YENİ
       } = req.body;
 
       const evrak = Evraklar.update(evrakId, {
@@ -307,9 +345,12 @@ router.put('/:id',
         vade_tarihi,
         evrak_tarihi,
         banka_adi,
+        banka_id,      // YENİ
         kesideci,
         cari_id,
-        notlar
+        notlar,
+        para_birimi,   // YENİ
+        doviz_kuru     // YENİ
       }, req.user.id);
 
       if (!evrak) {
@@ -533,6 +574,241 @@ router.post('/toplu-durum',
       logger.error('Toplu durum update error', { error: error.message });
       res.status(500).json({
         error: 'Sunucu hatası'
+      });
+    }
+  }
+);
+
+// ============================================
+// FOTOĞRAF ENDPOINT'LERİ
+// ============================================
+
+/**
+ * GET /api/evraklar/:id/fotograflar
+ * Evraka ait fotoğraf listesi
+ */
+router.get('/:id/fotograflar',
+  param('id').isInt({ min: 1 }).withMessage('Geçersiz evrak ID'),
+  (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          error: 'Validation hatası',
+          details: errors.array()
+        });
+      }
+
+      const evrakId = parseInt(req.params.id);
+
+      // Evrak var mı kontrol et
+      const evrak = Evraklar.getById(evrakId);
+      if (!evrak) {
+        return res.status(404).json({
+          error: 'Evrak bulunamadı'
+        });
+      }
+
+      const fotograflar = EvrakFotograflar.getByEvrakId(evrakId);
+
+      res.json({
+        evrak_id: evrakId,
+        toplam: fotograflar.length,
+        fotograflar
+      });
+
+    } catch (error) {
+      logger.error('Get evrak fotograflar error', { error: error.message, evrakId: req.params.id });
+      res.status(500).json({
+        error: 'Sunucu hatası',
+        message: 'Fotoğraflar alınamadı'
+      });
+    }
+  }
+);
+
+/**
+ * POST /api/evraklar/:id/fotograflar
+ * Evraka fotoğraf yükle (tek veya çoklu)
+ */
+router.post('/:id/fotograflar',
+  param('id').isInt({ min: 1 }).withMessage('Geçersiz evrak ID'),
+  (req, res, next) => {
+    // Önce evrak var mı kontrol et
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        error: 'Validation hatası',
+        details: errors.array()
+      });
+    }
+
+    const evrakId = parseInt(req.params.id);
+    const evrak = Evraklar.getById(evrakId);
+    
+    if (!evrak) {
+      return res.status(404).json({
+        error: 'Evrak bulunamadı'
+      });
+    }
+
+    next();
+  },
+  upload.array('fotograflar', 10), // Max 10 dosya, field adı: fotograflar
+  handleUploadError, // Multer hatalarını yakala
+  async (req, res) => {
+    try {
+      const evrakId = parseInt(req.params.id);
+      const files = req.files;
+
+      if (!files || files.length === 0) {
+        return res.status(400).json({
+          error: 'Dosya bulunamadı',
+          message: 'En az bir fotoğraf yüklemelisiniz'
+        });
+      }
+
+      const uploadedPhotos = [];
+      const errors = [];
+
+      // Dosyaları sırayla işle
+      for (const file of files) {
+        try {
+          // Dosyayı işle (thumbnail oluştur, metadata al)
+          const processedFile = await processUploadedFile(file, evrakId);
+
+          // DB'ye kaydet
+          const foto = EvrakFotograflar.create({
+            evrak_id: evrakId,
+            ...processedFile,
+            created_by: req.user.id
+          });
+
+          uploadedPhotos.push(foto);
+
+          logger.info('Fotoğraf yüklendi', {
+            evrakId,
+            fotografId: foto.id,
+            dosyaAdi: foto.dosya_adi,
+            boyut: foto.boyut,
+            uploadedBy: req.user.id
+          });
+
+        } catch (fileError) {
+          logger.error('Dosya işleme hatası', {
+            evrakId,
+            file: file.originalname,
+            error: fileError.message
+          });
+          errors.push({
+            dosya: file.originalname,
+            hata: fileError.message
+          });
+        }
+      }
+
+      // Sonuç
+      if (uploadedPhotos.length === 0) {
+        return res.status(500).json({
+          error: 'Yükleme başarısız',
+          message: 'Hiçbir dosya yüklenemedi',
+          hatalar: errors
+        });
+      }
+
+      res.status(201).json({
+        message: `${uploadedPhotos.length} fotoğraf yüklendi`,
+        yuklenen: uploadedPhotos.length,
+        hatali: errors.length,
+        fotograflar: uploadedPhotos,
+        hatalar: errors.length > 0 ? errors : undefined
+      });
+
+    } catch (error) {
+      logger.error('Upload fotograflar error', { error: error.message, evrakId: req.params.id });
+      res.status(500).json({
+        error: 'Sunucu hatası',
+        message: 'Fotoğraflar yüklenemedi'
+      });
+    }
+  }
+);
+
+/**
+ * DELETE /api/evraklar/:id/fotograflar/:fotoId
+ * Tek fotoğraf sil
+ */
+router.delete('/:id/fotograflar/:fotoId',
+  [
+    param('id').isInt({ min: 1 }).withMessage('Geçersiz evrak ID'),
+    param('fotoId').isInt({ min: 1 }).withMessage('Geçersiz fotoğraf ID')
+  ],
+  (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          error: 'Validation hatası',
+          details: errors.array()
+        });
+      }
+
+      const evrakId = parseInt(req.params.id);
+      const fotoId = parseInt(req.params.fotoId);
+
+      // Fotoğrafı al
+      const foto = EvrakFotograflar.getById(fotoId);
+
+      if (!foto) {
+        return res.status(404).json({
+          error: 'Fotoğraf bulunamadı'
+        });
+      }
+
+      // Fotoğraf bu evraka mı ait?
+      if (foto.evrak_id !== evrakId) {
+        return res.status(400).json({
+          error: 'Bu fotoğraf belirtilen evraka ait değil'
+        });
+      }
+
+      // Dosyaları diskten sil
+      deleteFiles(foto.dosya_yolu, foto.thumbnail_yolu);
+
+      // DB kaydını sil
+      const result = EvrakFotograflar.delete(fotoId);
+
+      if (!result.success) {
+        return res.status(500).json({
+          error: 'Silme işlemi başarısız',
+          message: result.message
+        });
+      }
+
+      logger.info('Fotoğraf silindi', {
+        evrakId,
+        fotografId: fotoId,
+        dosyaAdi: foto.dosya_adi,
+        deletedBy: req.user.id
+      });
+
+      res.json({
+        message: 'Fotoğraf silindi',
+        silinen: {
+          id: fotoId,
+          dosya_adi: foto.dosya_adi
+        }
+      });
+
+    } catch (error) {
+      logger.error('Delete fotograf error', { 
+        error: error.message, 
+        evrakId: req.params.id,
+        fotoId: req.params.fotoId 
+      });
+      res.status(500).json({
+        error: 'Sunucu hatası',
+        message: 'Fotoğraf silinemedi'
       });
     }
   }
