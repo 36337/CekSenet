@@ -348,9 +348,9 @@ export function KullanicilarPage() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-900/20">
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
         <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-red-400" />
-        <Text className="mt-4 text-red-700 dark:text-red-400">{error}</Text>
+        <Text className="mt-4 text-red-700">{error}</Text>
         <Button className="mt-4" onClick={fetchUsers}>
           Tekrar Dene
         </Button>
@@ -367,7 +367,7 @@ export function KullanicilarPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
             <UserGroupIcon className="h-6 w-6" />
           </div>
           <div>
@@ -382,7 +382,7 @@ export function KullanicilarPage() {
       </div>
 
       {/* Kullanıcı Tablosu */}
-      <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+      <div className="rounded-lg border border-zinc-200 bg-white">
         <Table>
           <TableHead>
             <TableRow>
@@ -461,7 +461,7 @@ export function KullanicilarPage() {
 
         <DialogBody>
           {formErrors.general && (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               {formErrors.general}
             </div>
           )}
@@ -538,7 +538,7 @@ export function KullanicilarPage() {
 
         <DialogBody>
           {formErrors.general && (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               {formErrors.general}
             </div>
           )}
@@ -550,7 +550,7 @@ export function KullanicilarPage() {
                 type="text"
                 value={selectedUser?.username || ''}
                 disabled
-                className="bg-zinc-100 dark:bg-zinc-700"
+                className="bg-zinc-100"
               />
               <Text className="mt-1 text-sm text-zinc-500">Kullanıcı adı değiştirilemez</Text>
             </Field>
@@ -611,7 +611,7 @@ export function KullanicilarPage() {
 
         <DialogBody>
           {formErrors.general && (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               {formErrors.general}
             </div>
           )}
@@ -659,12 +659,12 @@ export function KullanicilarPage() {
 
         <DialogBody>
           {formErrors.general && (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               {formErrors.general}
             </div>
           )}
 
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400">
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
             <strong>Uyarı:</strong> Bu işlem geri alınamaz. Kullanıcının tüm oturum bilgileri
             silinecektir.
           </div>

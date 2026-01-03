@@ -48,7 +48,7 @@ export function AppInitializer({ children }: AppInitializerProps) {
 
   if (isChecking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-900">
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
           <Text className="mt-4">Yükleniyor...</Text>
@@ -59,17 +59,17 @@ export function AppInitializer({ children }: AppInitializerProps) {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-900">
-        <div className="max-w-md rounded-lg bg-white p-8 text-center shadow-sm ring-1 ring-zinc-950/5 dark:bg-zinc-800 dark:ring-white/10">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
+        <div className="max-w-md rounded-lg bg-white p-8 text-center shadow-sm ring-1 ring-zinc-950/5">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600">
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <Text className="mt-4 font-medium text-zinc-900 dark:text-white">
+          <Text className="mt-4 font-medium text-zinc-900">
             Bağlantı Hatası
           </Text>
-          <Text className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <Text className="mt-2 text-sm text-zinc-500">
             {error}
           </Text>
           <button

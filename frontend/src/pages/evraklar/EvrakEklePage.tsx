@@ -198,7 +198,7 @@ export function EvrakEklePage() {
           Evraklara Dön
         </Button>
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
             <DocumentPlusIcon className="h-6 w-6" />
           </div>
           <div>
@@ -212,12 +212,12 @@ export function EvrakEklePage() {
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* General Error */}
         {errors.general && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
             {errors.general}
           </div>
         )}
 
-        <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-6">
           <FieldGroup>
             {/* Evrak Tipi & Durum */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">

@@ -50,20 +50,20 @@ interface HareketSatiriProps {
 function HareketSatiri({ hareket, onClick }: HareketSatiriProps) {
   return (
     <TableRow 
-      className="cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+      className="cursor-pointer transition-colors hover:bg-zinc-50"
       onClick={onClick}
     >
       {/* Evrak Bilgisi */}
       <TableCell>
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
-            <DocumentTextIcon className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-100">
+            <DocumentTextIcon className="h-5 w-5 text-zinc-500" />
           </div>
           <div>
-            <p className="font-medium text-zinc-900 dark:text-white">
+            <p className="font-medium text-zinc-900">
               {hareket.evrak_no}
             </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="text-xs text-zinc-500">
               {getEvrakTipiLabel(hareket.evrak_tipi)} • {hareket.cari_adi || hareket.kesideci || '-'}
             </p>
           </div>
@@ -91,17 +91,17 @@ function HareketSatiri({ hareket, onClick }: HareketSatiriProps) {
 
       {/* Tutar */}
       <TableCell className="text-right">
-        <span className="font-medium text-zinc-900 dark:text-white">
+        <span className="font-medium text-zinc-900">
           {formatCurrency(hareket.tutar)}
         </span>
       </TableCell>
 
       {/* Tarih ve İşlem Yapan */}
       <TableCell className="text-right">
-        <p className="text-sm text-zinc-900 dark:text-white">
+        <p className="text-sm text-zinc-900">
           {formatDateTime(hareket.created_at)}
         </p>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="text-xs text-zinc-500">
           {hareket.islem_yapan || '-'}
         </p>
       </TableCell>
@@ -123,9 +123,9 @@ export function SonHareketler({ data, isLoading = false, limit = 10 }: SonHareke
   // Veri yoksa
   if (!data || data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-zinc-300 bg-zinc-50 py-12 dark:border-zinc-700 dark:bg-zinc-800/50">
+      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-zinc-300 bg-zinc-50 py-12">
         <DocumentTextIcon className="h-12 w-12 text-zinc-400" />
-        <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-4 text-sm text-zinc-500">
           Henüz hareket bulunmuyor
         </p>
       </div>
@@ -137,7 +137,7 @@ export function SonHareketler({ data, isLoading = false, limit = 10 }: SonHareke
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+    <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
       <Table dense>
         <TableHead>
           <TableRow>
@@ -178,7 +178,7 @@ export function SonHareketlerCompact({ data, isLoading = false, limit = 5 }: Son
     return (
       <div className="animate-pulse space-y-3">
         {Array.from({ length: limit }).map((_, i) => (
-          <div key={i} className="h-14 rounded-lg bg-zinc-200 dark:bg-zinc-700" />
+          <div key={i} className="h-14 rounded-lg bg-zinc-200" />
         ))}
       </div>
     )
@@ -186,7 +186,7 @@ export function SonHareketlerCompact({ data, isLoading = false, limit = 5 }: Son
 
   if (!data || data.length === 0) {
     return (
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="text-sm text-zinc-500">
         Henüz hareket bulunmuyor.
       </p>
     )
@@ -198,13 +198,13 @@ export function SonHareketlerCompact({ data, isLoading = false, limit = 5 }: Son
         <button
           key={hareket.id}
           onClick={() => navigate(`/evraklar/${hareket.evrak_id}`)}
-          className="flex w-full items-center justify-between rounded-lg bg-zinc-50 px-3 py-2 text-left transition-colors hover:bg-zinc-100 dark:bg-zinc-800/50 dark:hover:bg-zinc-800"
+          className="flex w-full items-center justify-between rounded-lg bg-zinc-50 px-3 py-2 text-left transition-colors hover:bg-zinc-100"
         >
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-zinc-900 dark:text-white">
+            <p className="truncate text-sm font-medium text-zinc-900">
               {hareket.evrak_no}
             </p>
-            <div className="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+            <div className="flex items-center gap-1 text-xs text-zinc-500">
               {hareket.eski_durum && (
                 <>
                   <span>{getDurumLabel(hareket.eski_durum)}</span>
@@ -215,7 +215,7 @@ export function SonHareketlerCompact({ data, isLoading = false, limit = 5 }: Son
             </div>
           </div>
           <div className="ml-3 text-right">
-            <p className="text-sm font-medium text-zinc-900 dark:text-white">
+            <p className="text-sm font-medium text-zinc-900">
               {formatCurrency(hareket.tutar)}
             </p>
           </div>
@@ -231,33 +231,33 @@ export function SonHareketlerCompact({ data, isLoading = false, limit = 5 }: Son
 
 function SonHareketlerSkeleton({ count = 5 }: { count?: number }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+    <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
       <div className="animate-pulse">
         {/* Header */}
-        <div className="flex gap-4 border-b border-zinc-200 px-4 py-3 dark:border-zinc-700">
-          <div className="h-4 w-24 rounded bg-zinc-200 dark:bg-zinc-700" />
-          <div className="h-4 w-32 rounded bg-zinc-200 dark:bg-zinc-700" />
-          <div className="ml-auto h-4 w-20 rounded bg-zinc-200 dark:bg-zinc-700" />
-          <div className="h-4 w-24 rounded bg-zinc-200 dark:bg-zinc-700" />
+        <div className="flex gap-4 border-b border-zinc-200 px-4 py-3">
+          <div className="h-4 w-24 rounded bg-zinc-200" />
+          <div className="h-4 w-32 rounded bg-zinc-200" />
+          <div className="ml-auto h-4 w-20 rounded bg-zinc-200" />
+          <div className="h-4 w-24 rounded bg-zinc-200" />
         </div>
         {/* Rows */}
         {Array.from({ length: count }).map((_, i) => (
-          <div key={i} className="flex items-center gap-4 border-b border-zinc-100 px-4 py-4 last:border-0 dark:border-zinc-800">
+          <div key={i} className="flex items-center gap-4 border-b border-zinc-100 px-4 py-4 last:border-0">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-lg bg-zinc-200 dark:bg-zinc-700" />
+              <div className="h-9 w-9 rounded-lg bg-zinc-200" />
               <div className="space-y-1">
-                <div className="h-4 w-24 rounded bg-zinc-200 dark:bg-zinc-700" />
-                <div className="h-3 w-32 rounded bg-zinc-200 dark:bg-zinc-700" />
+                <div className="h-4 w-24 rounded bg-zinc-200" />
+                <div className="h-3 w-32 rounded bg-zinc-200" />
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <div className="h-5 w-16 rounded-full bg-zinc-200 dark:bg-zinc-700" />
-              <div className="h-5 w-16 rounded-full bg-zinc-200 dark:bg-zinc-700" />
+              <div className="h-5 w-16 rounded-full bg-zinc-200" />
+              <div className="h-5 w-16 rounded-full bg-zinc-200" />
             </div>
-            <div className="ml-auto h-4 w-20 rounded bg-zinc-200 dark:bg-zinc-700" />
+            <div className="ml-auto h-4 w-20 rounded bg-zinc-200" />
             <div className="space-y-1 text-right">
-              <div className="h-4 w-28 rounded bg-zinc-200 dark:bg-zinc-700" />
-              <div className="h-3 w-16 rounded bg-zinc-200 dark:bg-zinc-700" />
+              <div className="h-4 w-28 rounded bg-zinc-200" />
+              <div className="h-3 w-16 rounded bg-zinc-200" />
             </div>
           </div>
         ))}

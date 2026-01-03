@@ -213,8 +213,8 @@ export function DashboardPage() {
 
       {/* Error Banner */}
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950/30">
-          <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+          <p className="text-sm text-red-700">{error}</p>
           <Button
             color="red"
             className="mt-2"
@@ -237,7 +237,7 @@ export function DashboardPage() {
       {/* Grafikler ve Uyarılar Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Durum Dağılımı - Pie Chart */}
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+        <section className="rounded-xl border border-zinc-200 bg-white p-6">
           <Subheading>Durum Dağılımı</Subheading>
           <Text className="mt-1 text-sm">Evrakların durumlarına göre dağılımı</Text>
           <div className="mt-4">
@@ -250,7 +250,7 @@ export function DashboardPage() {
         </section>
 
         {/* Aylık Vade Dağılımı - Bar Chart */}
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+        <section className="rounded-xl border border-zinc-200 bg-white p-6">
           <Subheading>Aylık Vade Dağılımı</Subheading>
           <Text className="mt-1 text-sm">Önümüzdeki 6 ayın vade takvimi</Text>
           <div className="mt-4">
@@ -263,7 +263,7 @@ export function DashboardPage() {
         </section>
 
         {/* Vade Uyarıları */}
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+        <section className="rounded-xl border border-zinc-200 bg-white p-6">
           <Subheading>Vade Uyarıları</Subheading>
           <Text className="mt-1 text-sm">Dikkat edilmesi gereken evraklar</Text>
           <div className="mt-4">

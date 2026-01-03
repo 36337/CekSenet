@@ -215,7 +215,7 @@ export function EvraklarPage() {
     <button
       type="button"
       onClick={() => handleSort(field)}
-      className="inline-flex items-center font-medium hover:text-zinc-900 dark:hover:text-white"
+      className="inline-flex items-center font-medium hover:text-zinc-900"
     >
       {children}
       <SortIcon field={field} />
@@ -245,7 +245,7 @@ export function EvraklarPage() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+      <div className="rounded-lg border border-zinc-200 bg-white p-4">
         {/* Search Bar */}
         <form onSubmit={handleSearch} className="flex gap-2">
           <div className="relative flex-1">
@@ -265,7 +265,7 @@ export function EvraklarPage() {
             type="button"
             outline
             onClick={() => setShowFilters(!showFilters)}
-            className={showFilters ? 'bg-zinc-100 dark:bg-zinc-700' : ''}
+            className={showFilters ? 'bg-zinc-100' : ''}
           >
             <FunnelIcon className="h-5 w-5" />
             Filtreler
@@ -277,9 +277,9 @@ export function EvraklarPage() {
 
         {/* Extended Filters */}
         {showFilters && (
-          <div className="mt-4 grid grid-cols-1 gap-4 border-t border-zinc-200 pt-4 sm:grid-cols-2 lg:grid-cols-5 dark:border-zinc-700">
+          <div className="mt-4 grid grid-cols-1 gap-4 border-t border-zinc-200 pt-4 sm:grid-cols-2 lg:grid-cols-5">
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">
                 Durum
               </label>
               <Select value={durum} onChange={(e) => { setDurum(e.target.value); setPage(1) }}>
@@ -292,7 +292,7 @@ export function EvraklarPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">
                 Evrak Tipi
               </label>
               <Select value={evrakTipi} onChange={(e) => { setEvrakTipi(e.target.value); setPage(1) }}>
@@ -305,7 +305,7 @@ export function EvraklarPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">
                 Vade Başlangıç
               </label>
               <Input
@@ -316,7 +316,7 @@ export function EvraklarPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">
                 Vade Bitiş
               </label>
               <Input
@@ -337,7 +337,7 @@ export function EvraklarPage() {
 
       {/* Error State */}
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
           {error}
         </div>
       )}
@@ -348,7 +348,7 @@ export function EvraklarPage() {
           <ArrowPathIcon className="h-8 w-8 animate-spin text-zinc-400" />
         </div>
       ) : evraklar.length === 0 ? (
-        <div className="rounded-lg border border-zinc-200 bg-white p-12 text-center dark:border-zinc-700 dark:bg-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-12 text-center">
           <DocumentTextIcon className="mx-auto h-12 w-12 text-zinc-400" />
           <Text className="mt-4">
             {search || durum || evrakTipi || vadeBaslangic || vadeBitis
@@ -363,7 +363,7 @@ export function EvraklarPage() {
         </div>
       ) : (
         <>
-          <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+          <div className="rounded-lg border border-zinc-200 bg-white">
             <Table striped>
               <TableHead>
                 <TableRow>
@@ -397,12 +397,12 @@ export function EvraklarPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="font-medium">{evrak.evrak_no}</TableCell>
-                    <TableCell className="font-medium text-zinc-900 dark:text-white">
+                    <TableCell className="font-medium text-zinc-900">
                       {formatCurrency(evrak.tutar)}
                     </TableCell>
                     <TableCell>{formatDate(evrak.vade_tarihi)}</TableCell>
                     <TableCell>{evrak.kesideci}</TableCell>
-                    <TableCell className="text-zinc-500 dark:text-zinc-400">
+                    <TableCell className="text-zinc-500">
                       {evrak.cari_adi || '-'}
                     </TableCell>
                     <TableCell className="text-right">

@@ -34,12 +34,12 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Toolti
   const data = payload[0].payload
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
-      <p className="font-medium text-zinc-900 dark:text-white">{data.label}</p>
-      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+    <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-lg">
+      <p className="font-medium text-zinc-900">{data.label}</p>
+      <p className="mt-1 text-sm text-zinc-600">
         Adet: <span className="font-semibold">{data.adet}</span>
       </p>
-      <p className="text-sm text-zinc-600 dark:text-zinc-300">
+      <p className="text-sm text-zinc-600">
         Tutar: <span className="font-semibold">{formatCurrency(data.tutar)}</span>
       </p>
     </div>
@@ -67,7 +67,7 @@ function CustomLegend({ payload }: { payload?: LegendPayload[] }) {
             className="h-3 w-3 rounded-full"
             style={{ backgroundColor: entry.color }}
           />
-          <span className="text-sm text-zinc-600 dark:text-zinc-300">
+          <span className="text-sm text-zinc-600">
             {entry.value}
           </span>
         </div>
@@ -96,10 +96,10 @@ export function DurumPieChart({
   if (!hasData) {
     return (
       <div
-        className="flex items-center justify-center rounded-lg border border-dashed border-zinc-300 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800/50"
+        className="flex items-center justify-center rounded-lg border border-dashed border-zinc-300 bg-zinc-50"
         style={{ height }}
       >
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-zinc-500">
           Henüz evrak bulunmuyor
         </p>
       </div>
@@ -149,7 +149,7 @@ function DurumPieChartSkeleton({ height }: { height: number }) {
       className="flex animate-pulse items-center justify-center"
       style={{ height }}
     >
-      <div className="h-48 w-48 rounded-full bg-zinc-200 dark:bg-zinc-700" />
+      <div className="h-48 w-48 rounded-full bg-zinc-200" />
     </div>
   )
 }

@@ -27,7 +27,7 @@ function PlaceholderPage({ title, description, icon, children }: PlaceholderProp
   return (
     <div>
       <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
           {icon}
         </div>
         <div>
@@ -36,7 +36,7 @@ function PlaceholderPage({ title, description, icon, children }: PlaceholderProp
         </div>
       </div>
 
-      <div className="mt-8 rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-8 text-center dark:border-zinc-700 dark:bg-zinc-800/50">
+      <div className="mt-8 rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-8 text-center">
         <Text className="text-zinc-500">
           Bu sayfa henüz geliştirme aşamasındadır.
         </Text>

@@ -35,7 +35,7 @@ router.get('/',
       .isInt({ min: 1 }).withMessage('Sayfa numarası pozitif tam sayı olmalı'),
     query('limit')
       .optional()
-      .isInt({ min: 1, max: 100 }).withMessage('Limit 1-100 arasında olmalı')
+      .isInt({ min: 1, max: 1000 }).withMessage('Limit 1-1000 arasında olmalı')
   ],
   (req, res) => {
     try {

@@ -291,7 +291,7 @@ export function EvrakDuzenlePage() {
       <div className="mx-auto max-w-2xl">
         <div className="flex items-center justify-center py-12">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-          <span className="ml-3 text-zinc-600 dark:text-zinc-400">Evrak yükleniyor...</span>
+          <span className="ml-3 text-zinc-600">Evrak yükleniyor...</span>
         </div>
       </div>
     )
@@ -300,9 +300,9 @@ export function EvrakDuzenlePage() {
   if (loadError) {
     return (
       <div className="mx-auto max-w-2xl">
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-900/20">
-          <h3 className="text-lg font-semibold text-red-700 dark:text-red-400">Hata</h3>
-          <p className="mt-2 text-red-600 dark:text-red-300">{loadError}</p>
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6">
+          <h3 className="text-lg font-semibold text-red-700">Hata</h3>
+          <p className="mt-2 text-red-600">{loadError}</p>
           <Button className="mt-4" onClick={() => navigate('/evraklar')}>
             Evraklara Dön
           </Button>
@@ -324,7 +324,7 @@ export function EvrakDuzenlePage() {
           Detaya Dön
         </Button>
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
             <PencilSquareIcon className="h-6 w-6" />
           </div>
           <div>
@@ -338,12 +338,12 @@ export function EvrakDuzenlePage() {
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* General Error */}
         {errors.general && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
             {errors.general}
           </div>
         )}
 
-        <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-6">
           <FieldGroup>
             {/* Evrak Tipi & Durum */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -526,7 +526,7 @@ export function EvrakDuzenlePage() {
           Bu kayıt siz düzenlemeye başladıktan sonra başka bir kullanıcı tarafından değiştirilmiş.
         </DialogDescription>
         <DialogBody>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-zinc-600">
             Değişikliklerinizi yine de kaydetmek isterseniz diğer kullanıcının değişiklikleri kaybolacaktır.
             Sayfayı yenileyerek güncel verileri görebilirsiniz.
           </p>

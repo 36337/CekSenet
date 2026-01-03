@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+/* ============================================
+   Dark Mode Devre Dışı
+   Her zaman light mode kullan
+   ============================================ */
+:root {
+  color-scheme: light only;
+}
+
+/* Dark mode media query'sini override et */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light only;
+  }
+}
+
 @theme {
   /* Primary - Mavi Tonları */
   --color-primary-50: #eff6ff;
@@ -25,6 +40,29 @@
   --color-ciro: #f97316;
   --color-tahsil: #10b981;
   --color-karsilıksiz: #ef4444;
+  
+  /* ============================================
+     Uygulama Renk Şeması (v1.1.0)
+     ============================================ */
+  
+  /* Sidebar - Açık Mavi */
+  --color-sidebar-bg: #e0f2fe;
+  --color-sidebar-hover: #bae6fd;
+  --color-sidebar-active: #7dd3fc;
+  --color-sidebar-text: #0c4a6e;
+  --color-sidebar-text-muted: #0369a1;
+  --color-sidebar-border: #bae6fd;
+  
+  /* Ana İçerik - Koyu Gri-Mavi */
+  --color-content-bg: #3a4549;
+  --color-content-text: #f8fafc;
+  --color-content-text-muted: #94a3b8;
+  
+  /* Kart - Kırık Beyaz */
+  --color-card-bg: #f8f9fa;
+  --color-card-border: #e2e8f0;
+  --color-card-text: #1e293b;
+  --color-card-text-muted: #64748b;
   
   /* Font */
   --font-sans: "Inter", system-ui, sans-serif;

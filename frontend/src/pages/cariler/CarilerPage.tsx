@@ -137,11 +137,11 @@ export function CarilerPage() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+      <div className="rounded-lg border border-zinc-200 bg-white p-4">
         <form onSubmit={handleSearch} className="flex flex-wrap items-end gap-4">
           {/* Tip Filter */}
           <div className="w-full sm:w-40">
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label className="mb-1 block text-sm font-medium text-zinc-700">
               Tip
             </label>
             <Select
@@ -162,7 +162,7 @@ export function CarilerPage() {
 
           {/* Search */}
           <div className="flex-1 min-w-[200px]">
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label className="mb-1 block text-sm font-medium text-zinc-700">
               Arama
             </label>
             <Input
@@ -187,7 +187,7 @@ export function CarilerPage() {
       </div>
 
       {/* Results Info */}
-      <div className="flex items-center justify-between text-sm text-zinc-600 dark:text-zinc-400">
+      <div className="flex items-center justify-between text-sm text-zinc-600">
         <span>
           {isLoading ? 'Yükleniyor...' : `${totalCount} cari bulundu`}
         </span>
@@ -210,7 +210,7 @@ export function CarilerPage() {
 
       {/* Error State */}
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
           {error}
         </div>
       )}
@@ -224,7 +224,7 @@ export function CarilerPage() {
 
       {/* Empty State */}
       {!isLoading && !error && cariler.length === 0 && (
-        <div className="rounded-lg border border-zinc-200 bg-white p-12 text-center dark:border-zinc-700 dark:bg-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-12 text-center">
           <UserGroupIcon className="mx-auto h-12 w-12 text-zinc-400" />
           <Text className="mt-4">Cari bulunamadı</Text>
           <Button className="mt-4" onClick={() => navigate('/cariler/yeni')}>
@@ -236,7 +236,7 @@ export function CarilerPage() {
 
       {/* Table */}
       {!isLoading && !error && cariler.length > 0 && (
-        <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+        <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
           <Table>
             <TableHead>
               <TableRow>
@@ -251,7 +251,7 @@ export function CarilerPage() {
               {cariler.map((cari) => (
                 <TableRow
                   key={cari.id}
-                  className="cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700/50"
+                  className="cursor-pointer hover:bg-zinc-50"
                   onClick={() => navigate(`/cariler/${cari.id}`)}
                 >
                   <TableCell className="font-medium">{cari.ad_soyad}</TableCell>

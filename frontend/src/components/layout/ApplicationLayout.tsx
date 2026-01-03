@@ -46,6 +46,9 @@ import {
   ChevronDownIcon,
 } from '@heroicons/react/20/solid'
 
+// Logo
+import botechLogo from '@/assets/botech-logo.png'
+
 // ============================================
 // Types
 // ============================================
@@ -122,15 +125,17 @@ function AppSidebar({ pathname, isAdmin, user, onLogout }: AppSidebarProps) {
     <Sidebar>
       <SidebarHeader>
         {/* App Logo & Name */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
-            <DocumentTextIcon className="h-6 w-6" />
-          </div>
-          <div>
-            <span className="text-base font-semibold text-zinc-950 dark:text-white">
-              ÇekSenet
+        <div className="flex items-center gap-2">
+          <img 
+            src={botechLogo} 
+            alt="Botech" 
+            className="h-7 w-auto"
+          />
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold leading-tight text-zinc-950">
+              Çek Senet
             </span>
-            <span className="block text-xs text-zinc-500 dark:text-zinc-400">
+            <span className="text-xs leading-tight text-zinc-500">
               Takip Sistemi
             </span>
           </div>
@@ -215,10 +220,10 @@ function AppSidebar({ pathname, isAdmin, user, onLogout }: AppSidebarProps) {
             className="size-8 bg-blue-600 text-white"
           />
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-medium text-zinc-950 dark:text-white">
+            <div className="truncate text-sm font-medium text-zinc-950">
               {user?.ad_soyad || 'Kullanıcı'}
             </div>
-            <div className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+            <div className="truncate text-xs text-zinc-500">
               {user?.rol === 'admin' ? 'Yönetici' : 'Kullanıcı'}
             </div>
           </div>
@@ -269,7 +274,7 @@ function AppNavbar({ user, isAdmin, onLogout, getInitials }: AppNavbarProps) {
           </DropdownButton>
 
           <DropdownMenu anchor="bottom end">
-            <div className="px-3.5 py-1.5 text-xs text-zinc-500 dark:text-zinc-400 sm:px-3">
+            <div className="px-3.5 py-1.5 text-xs text-zinc-500 sm:px-3">
               {user?.rol === 'admin' ? 'Yönetici' : 'Kullanıcı'}
             </div>
 

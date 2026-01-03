@@ -190,9 +190,9 @@ export function EvrakDetayPage() {
           <ArrowLeftIcon className="h-5 w-5" />
           Listeye Dön
         </Button>
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-900/20">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
           <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-red-400" />
-          <Text className="mt-4 text-red-700 dark:text-red-400">
+          <Text className="mt-4 text-red-700">
             {error || 'Evrak bulunamadı'}
           </Text>
         </div>
@@ -241,7 +241,7 @@ export function EvrakDetayPage() {
       </div>
 
       {/* Evrak Bilgileri */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+      <div className="rounded-lg border border-zinc-200 bg-white p-6">
         <Heading level={2} className="text-lg">
           Evrak Bilgileri
         </Heading>
@@ -259,7 +259,7 @@ export function EvrakDetayPage() {
           <DescriptionDetails className="font-medium">{evrak.evrak_no}</DescriptionDetails>
 
           <DescriptionTerm>Tutar</DescriptionTerm>
-          <DescriptionDetails className="text-lg font-semibold text-zinc-900 dark:text-white">
+          <DescriptionDetails className="text-lg font-semibold text-zinc-900">
             {formatCurrency(evrak.tutar)}
           </DescriptionDetails>
 
@@ -290,7 +290,7 @@ export function EvrakDetayPage() {
                 <button
                   type="button"
                   onClick={() => navigate(`/cariler/${evrak.cari_id}`)}
-                  className="text-blue-600 hover:underline dark:text-blue-400"
+                  className="text-blue-600 hover:underline"
                 >
                   {evrak.cari_adi}
                 </button>
@@ -317,7 +317,7 @@ export function EvrakDetayPage() {
       </div>
 
       {/* Hareket Geçmişi */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+      <div className="rounded-lg border border-zinc-200 bg-white p-6">
         <Heading level={2} className="text-lg">
           Hareket Geçmişi
         </Heading>
@@ -378,14 +378,14 @@ export function EvrakDetayPage() {
 
         <DialogBody>
           {durumError && (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               {durumError}
             </div>
           )}
 
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">
                 Mevcut Durum
               </label>
               <Badge color={DURUM_COLORS[evrak.durum] as any} className="text-sm">
@@ -394,7 +394,7 @@ export function EvrakDetayPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">
                 Yeni Durum <span className="text-red-500">*</span>
               </label>
               <Select
@@ -411,7 +411,7 @@ export function EvrakDetayPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-zinc-700">
                 Açıklama (İsteğe bağlı)
               </label>
               <Textarea

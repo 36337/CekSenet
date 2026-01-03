@@ -43,12 +43,12 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Toolti
   const data = payload[0].payload
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
-      <p className="font-medium text-zinc-900 dark:text-white">{data.ayLabel}</p>
-      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+    <div className="rounded-lg border border-zinc-200 bg-white p-3 shadow-lg">
+      <p className="font-medium text-zinc-900">{data.ayLabel}</p>
+      <p className="mt-1 text-sm text-zinc-600">
         Evrak Sayısı: <span className="font-semibold">{data.adet}</span>
       </p>
-      <p className="text-sm text-zinc-600 dark:text-zinc-300">
+      <p className="text-sm text-zinc-600">
         Toplam Tutar: <span className="font-semibold">{formatCurrency(data.tutar)}</span>
       </p>
     </div>
@@ -92,10 +92,10 @@ export function VadeBarChart({
   if (!data || data.length === 0) {
     return (
       <div
-        className="flex items-center justify-center rounded-lg border border-dashed border-zinc-300 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800/50"
+        className="flex items-center justify-center rounded-lg border border-dashed border-zinc-300 bg-zinc-50"
         style={{ height }}
       >
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-zinc-500">
           Vade verisi bulunmuyor
         </p>
       </div>
@@ -151,7 +151,7 @@ function VadeBarChartSkeleton({ height }: { height: number }) {
         {[40, 65, 45, 80, 55, 70].map((h, i) => (
           <div
             key={i}
-            className="w-8 rounded-t bg-zinc-200 dark:bg-zinc-700"
+            className="w-8 rounded-t bg-zinc-200"
             style={{ height: `${h}%` }}
           />
         ))}

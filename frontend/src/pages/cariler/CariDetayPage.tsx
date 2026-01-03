@@ -198,9 +198,9 @@ export function CariDetayPage() {
           <ArrowLeftIcon className="h-5 w-5" />
           Listeye Dön
         </Button>
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-900/20">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
           <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-red-400" />
-          <Text className="mt-4 text-red-700 dark:text-red-400">
+          <Text className="mt-4 text-red-700">
             {error || 'Cari bulunamadı'}
           </Text>
         </div>
@@ -249,34 +249,34 @@ export function CariDetayPage() {
 
       {/* İstatistik Kartları */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
           <Text className="text-sm text-zinc-500">Toplam Evrak</Text>
-          <div className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">
+          <div className="mt-1 text-2xl font-semibold text-zinc-900">
             {cari.evrak_sayisi}
           </div>
         </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
           <Text className="text-sm text-zinc-500">Toplam Tutar</Text>
-          <div className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">
+          <div className="mt-1 text-2xl font-semibold text-zinc-900">
             {formatCurrency(cari.toplam_tutar)}
           </div>
         </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
           <Text className="text-sm text-zinc-500">Portföyde</Text>
-          <div className="mt-1 text-2xl font-semibold text-blue-600 dark:text-blue-400">
+          <div className="mt-1 text-2xl font-semibold text-blue-600">
             {formatCurrency(cari.portfoy_tutar)}
           </div>
         </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+        <div className="rounded-lg border border-zinc-200 bg-white p-4">
           <Text className="text-sm text-zinc-500">Tahsil Edilen</Text>
-          <div className="mt-1 text-2xl font-semibold text-emerald-600 dark:text-emerald-400">
+          <div className="mt-1 text-2xl font-semibold text-emerald-600">
             {formatCurrency(cari.tahsil_tutar)}
           </div>
         </div>
       </div>
 
       {/* Cari Bilgileri */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+      <div className="rounded-lg border border-zinc-200 bg-white p-6">
         <Heading level={2} className="text-lg">
           Cari Bilgileri
         </Heading>
@@ -304,7 +304,7 @@ export function CariDetayPage() {
               <DescriptionDetails>
                 <a
                   href={`tel:${cari.telefon}`}
-                  className="text-blue-600 hover:underline dark:text-blue-400"
+                  className="text-blue-600 hover:underline"
                 >
                   {cari.telefon}
                 </a>
@@ -323,7 +323,7 @@ export function CariDetayPage() {
               <DescriptionDetails>
                 <a
                   href={`mailto:${cari.email}`}
-                  className="text-blue-600 hover:underline dark:text-blue-400"
+                  className="text-blue-600 hover:underline"
                 >
                   {cari.email}
                 </a>
@@ -371,7 +371,7 @@ export function CariDetayPage() {
       </div>
 
       {/* Evraklar Tablosu */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+      <div className="rounded-lg border border-zinc-200 bg-white p-6">
         <div className="flex items-center justify-between">
           <Heading level={2} className="text-lg">
             <span className="flex items-center gap-2">
@@ -450,7 +450,7 @@ export function CariDetayPage() {
 
             {/* Sayfalama */}
             {evrakTotalPages > 1 && (
-              <div className="mt-4 flex items-center justify-between border-t border-zinc-200 pt-4 dark:border-zinc-700">
+              <div className="mt-4 flex items-center justify-between border-t border-zinc-200 pt-4">
                 <Text className="text-sm text-zinc-500">
                   Sayfa {evrakPage} / {evrakTotalPages}
                 </Text>
@@ -490,19 +490,19 @@ export function CariDetayPage() {
         </DialogDescription>
         <DialogBody>
           {deleteError && (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               {deleteError}
             </div>
           )}
 
           {cari.evrak_sayisi > 0 && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
               <strong>Uyarı:</strong> Bu cariye ait {cari.evrak_sayisi} evrak bulunmaktadır.
               Cari silinirse evraklar cari ile ilişkisiz kalacaktır.
             </div>
           )}
 
-          <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mt-4 text-sm text-zinc-600">
             Bu işlem geri alınamaz.
           </p>
         </DialogBody>

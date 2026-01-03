@@ -45,33 +45,33 @@ const uyariConfigs: UyariConfig[] = [
     tip: 'gecikmis',
     baslik: 'Vadesi Geçmiş',
     icon: XCircleIcon,
-    bgColor: 'bg-red-50 dark:bg-red-950/30',
-    borderColor: 'border-red-200 dark:border-red-800',
-    iconColor: 'text-red-600 dark:text-red-400',
-    textColor: 'text-red-800 dark:text-red-200',
-    badgeColor: 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200',
+    iconColor: 'text-red-600',
+    textColor: 'text-red-800',
+    badgeColor: 'bg-red-100 text-red-700',
     filterParam: 'vade=gecikmis',
   },
   {
     tip: 'bugun',
     baslik: 'Bugün Vadesi Dolan',
     icon: ExclamationTriangleIcon,
-    bgColor: 'bg-orange-50 dark:bg-orange-950/30',
-    borderColor: 'border-orange-200 dark:border-orange-800',
-    iconColor: 'text-orange-600 dark:text-orange-400',
-    textColor: 'text-orange-800 dark:text-orange-200',
-    badgeColor: 'bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300',
+    bgColor: 'bg-orange-50',
+    borderColor: 'border-orange-200',
+    iconColor: 'text-orange-600',
+    textColor: 'text-orange-800',
+    badgeColor: 'bg-orange-100 text-orange-700',
     filterParam: 'vade=bugun',
   },
   {
     tip: 'buHafta',
     baslik: 'Bu Hafta Vadesi Dolacak',
     icon: ClockIcon,
-    bgColor: 'bg-amber-50 dark:bg-amber-950/30',
-    borderColor: 'border-amber-200 dark:border-amber-800',
-    iconColor: 'text-amber-600 dark:text-amber-400',
-    textColor: 'text-amber-800 dark:text-amber-200',
-    badgeColor: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300',
+    bgColor: 'bg-amber-50',
+    borderColor: 'border-amber-200',
+    iconColor: 'text-amber-600',
+    textColor: 'text-amber-800',
+    badgeColor: 'bg-amber-100 text-amber-700',
     filterParam: 'vade=buHafta',
   },
 ]
@@ -147,11 +147,11 @@ export function VadeUyarilari({ data, isLoading = false }: VadeUyarilariProps) {
   const toplamUyari = ozet.gecikmis.adet + ozet.bugun.adet + ozet.buHafta.adet
   if (toplamUyari === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-green-300 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950/30">
+      <div className="rounded-lg border border-dashed border-green-300 bg-green-50 p-4">
         <div className="flex items-center gap-3">
-          <div className="rounded-full bg-green-100 p-2 dark:bg-green-900/50">
+          <div className="rounded-full bg-green-100 p-2">
             <svg
-              className="h-5 w-5 text-green-600 dark:text-green-400"
+              className="h-5 w-5 text-green-600"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -164,7 +164,7 @@ export function VadeUyarilari({ data, isLoading = false }: VadeUyarilariProps) {
               />
             </svg>
           </div>
-          <p className="font-medium text-green-800 dark:text-green-200">
+          <p className="font-medium text-green-800">
             Tüm vadeler kontrol altında!
           </p>
         </div>
@@ -211,7 +211,7 @@ export function VadeUyarilariCompact({ data, isLoading = false }: VadeUyarilariC
     return (
       <div className="animate-pulse space-y-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-12 rounded-lg bg-zinc-200 dark:bg-zinc-700" />
+          <div key={i} className="h-12 rounded-lg bg-zinc-200" />
         ))}
       </div>
     )
@@ -224,7 +224,7 @@ export function VadeUyarilariCompact({ data, isLoading = false }: VadeUyarilariC
 
   if (toplamUyari === 0) {
     return (
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="text-sm text-zinc-500">
         Yaklaşan vade bulunmuyor.
       </p>
     )
@@ -235,12 +235,12 @@ export function VadeUyarilariCompact({ data, isLoading = false }: VadeUyarilariC
       {ozet.gecikmis.adet > 0 && (
         <button
           onClick={() => navigate('/evraklar?vade=gecikmis')}
-          className="flex w-full items-center justify-between rounded-lg bg-red-50 px-3 py-2 text-left transition-colors hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-950/50"
+          className="flex w-full items-center justify-between rounded-lg bg-red-50 px-3 py-2 text-left transition-colors hover:bg-red-100"
         >
-          <span className="text-sm font-medium text-red-700 dark:text-red-300">
+          <span className="text-sm font-medium text-red-700">
             {ozet.gecikmis.adet} vadesi geçmiş
           </span>
-          <span className="text-sm text-red-600 dark:text-red-400">
+          <span className="text-sm text-red-600">
             {formatCurrency(ozet.gecikmis.tutar)}
           </span>
         </button>
@@ -248,12 +248,12 @@ export function VadeUyarilariCompact({ data, isLoading = false }: VadeUyarilariC
       {ozet.bugun.adet > 0 && (
         <button
           onClick={() => navigate('/evraklar?vade=bugun')}
-          className="flex w-full items-center justify-between rounded-lg bg-orange-50 px-3 py-2 text-left transition-colors hover:bg-orange-100 dark:bg-orange-950/30 dark:hover:bg-orange-950/50"
+          className="flex w-full items-center justify-between rounded-lg bg-orange-50 px-3 py-2 text-left transition-colors hover:bg-orange-100"
         >
-          <span className="text-sm font-medium text-orange-700 dark:text-orange-300">
+          <span className="text-sm font-medium text-orange-700">
             {ozet.bugun.adet} bugün vadeli
           </span>
-          <span className="text-sm text-orange-600 dark:text-orange-400">
+          <span className="text-sm text-orange-600">
             {formatCurrency(ozet.bugun.tutar)}
           </span>
         </button>
@@ -261,12 +261,12 @@ export function VadeUyarilariCompact({ data, isLoading = false }: VadeUyarilariC
       {ozet.buHafta.adet > 0 && (
         <button
           onClick={() => navigate('/evraklar?vade=buHafta')}
-          className="flex w-full items-center justify-between rounded-lg bg-amber-50 px-3 py-2 text-left transition-colors hover:bg-amber-100 dark:bg-amber-950/30 dark:hover:bg-amber-950/50"
+          className="flex w-full items-center justify-between rounded-lg bg-amber-50 px-3 py-2 text-left transition-colors hover:bg-amber-100"
         >
-          <span className="text-sm font-medium text-amber-700 dark:text-amber-300">
+          <span className="text-sm font-medium text-amber-700">
             {ozet.buHafta.adet} bu hafta vadeli
           </span>
-          <span className="text-sm text-amber-600 dark:text-amber-400">
+          <span className="text-sm text-amber-600">
             {formatCurrency(ozet.buHafta.tutar)}
           </span>
         </button>
@@ -285,7 +285,7 @@ function VadeUyarilariSkeleton() {
       {[1, 2, 3].map((i) => (
         <div
           key={i}
-          className="h-16 rounded-lg bg-zinc-200 dark:bg-zinc-700"
+          className="h-16 rounded-lg bg-zinc-200"
         />
       ))}
     </div>

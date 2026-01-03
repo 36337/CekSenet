@@ -97,7 +97,7 @@ export function SetupPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-900">
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
         <Text>Kontrol ediliyor...</Text>
       </div>
     )
@@ -154,7 +154,7 @@ export function SetupPage() {
       <SetupLayout>
         <div className="text-center">
           {/* Success Icon */}
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-600">
             <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
@@ -191,7 +191,7 @@ export function SetupPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-8">
         {/* Global Error */}
         {error && (
-          <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+          <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600">
             {error}
           </div>
         )}
@@ -334,9 +334,9 @@ export function SetupPage() {
 // Layout wrapper for setup pages
 function SetupLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-zinc-50 px-6 py-12 dark:bg-zinc-900 lg:px-8">
+    <div className="flex min-h-screen flex-col justify-center bg-zinc-50 px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-lg">
-        <div className="rounded-xl bg-white px-6 py-10 shadow-sm ring-1 ring-zinc-950/5 dark:bg-zinc-800 dark:ring-white/10 sm:px-10">
+        <div className="rounded-xl bg-white px-6 py-10 shadow-sm ring-1 ring-zinc-950/5 sm:px-10">
           {children}
         </div>
 

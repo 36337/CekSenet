@@ -69,7 +69,7 @@ export function LoginPage() {
   // ============================================
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-900">
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
           <Text className="mt-4">Yükleniyor...</Text>
@@ -89,7 +89,7 @@ export function LoginPage() {
   // Render Login Form
   // ============================================
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-zinc-50 px-6 py-12 dark:bg-zinc-900 lg:px-8">
+    <div className="flex min-h-screen flex-col justify-center bg-zinc-50 px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Logo / App Name */}
         <div className="flex justify-center">
@@ -119,13 +119,13 @@ export function LoginPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="rounded-xl bg-white px-6 py-8 shadow-sm ring-1 ring-zinc-950/5 dark:bg-zinc-800 dark:ring-white/10 sm:px-10">
+        <div className="rounded-xl bg-white px-6 py-8 shadow-sm ring-1 ring-zinc-950/5 sm:px-10">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <Fieldset>
               <FieldGroup>
                 {/* Global Error */}
                 {error && (
-                  <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+                  <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600">
                     {error}
                   </div>
                 )}
