@@ -4,6 +4,7 @@
  */
 
 const db = require('./db');
+const Krediler = require('./krediler');
 
 // ============================================
 // ANA İSTATİSTİKLER
@@ -90,7 +91,8 @@ function getOzet() {
       gecikmis: { adet: vade.gecikmis_adet, tutar: vade.gecikmis_tutar },
       buAy: { adet: vade.bu_ay_adet, tutar: vade.bu_ay_tutar }
     },
-    tipDagilimi
+    tipDagilimi,
+    krediler: Krediler.getGenelOzet()
   };
 }
 

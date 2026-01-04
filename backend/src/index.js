@@ -28,6 +28,7 @@ const systemRoutes = require('./routes/system');
 const bankalarRoutes = require('./routes/bankalar');
 const kurlarRoutes = require('./routes/kurlar');
 const importRoutes = require('./routes/import');
+const kredilerRoutes = require('./routes/krediler');
 
 // Migration & Seed
 const { runMigrations } = require('./migrate');
@@ -93,6 +94,7 @@ app.use('/api/system', systemRoutes);
 app.use('/api/bankalar', bankalarRoutes);
 app.use('/api/kurlar', kurlarRoutes);
 app.use('/api/import', importRoutes);
+app.use('/api/krediler', kredilerRoutes);
 
 // ============================================
 // UPLOADS: Static File Serving (Fotoğraflar)

@@ -215,3 +215,76 @@ export type {
   ImportInfo,
   UploadProgress as ImportUploadProgress,
 } from './import'
+
+// Krediler
+export {
+  // API Fonksiyonları - Kredi
+  getKrediler,
+  getKredi,
+  getKrediOzet,
+  createKredi,
+  updateKredi,
+  deleteKredi,
+  // API Fonksiyonları - Taksit
+  getTaksitler,
+  taksitOde,
+  taksitIptal,
+  erkenOdeme,
+  // API Fonksiyonları - Taksit Listeleri
+  getBuAyTaksitler,
+  getGecikenTaksitler,
+  getYaklasanTaksitler,
+  // Sabitler
+  KREDI_TURU_LABELS,
+  KREDI_DURUM_LABELS,
+  KREDI_DURUM_COLORS,
+  TAKSIT_DURUM_LABELS,
+  TAKSIT_DURUM_COLORS,
+  PARA_BIRIMI_LABELS,
+  PARA_BIRIMI_SYMBOLS,
+  // Yardımcı Fonksiyonlar
+  hesaplaTaksit,
+  hesaplaToplamOdeme,
+  hesaplaToplamFaiz,
+  formatKrediTutar,
+  formatKrediTarih,
+  hesaplaIlerleme,
+} from './krediler'
+export type {
+  KrediTuru,
+  KrediDurum,
+  TaksitDurum,
+  ParaBirimi,
+  Kredi,
+  KrediDetay,
+  KrediTaksit,
+  KrediOzet,
+  KrediFormData,
+  KrediUpdateData,
+  KrediFilters,
+  KrediListResponse,
+  KrediGenelOzet,
+  TaksitOdemeData,
+  TaksitOdemeResponse,
+  ErkenOdemeData,
+  ErkenOdemeResponse,
+  BuAyTaksitlerResponse,
+  GecikenTaksitlerResponse,
+  YaklasanTaksitlerResponse,
+} from './krediler'
+
+// Settings
+export {
+  settingsService,
+  getSettings,
+  getSetting,
+  updateSettings,
+  updateSetting,
+  getWhatsAppSettings,
+  updateWhatsAppSettings,
+} from './settings'
+export type {
+  SettingValue,
+  Settings,
+  WhatsAppSettings,
+} from './settings'

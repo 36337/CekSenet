@@ -44,6 +44,7 @@ import {
   ArrowRightStartOnRectangleIcon,
   UserCircleIcon,
   ChevronDownIcon,
+  BanknotesIcon,
 } from '@heroicons/react/20/solid'
 
 // Logo
@@ -164,6 +165,14 @@ function AppSidebar({ pathname, isAdmin, user, onLogout }: AppSidebarProps) {
           >
             <UsersIcon data-slot="icon" />
             <SidebarLabel>Cariler</SidebarLabel>
+          </SidebarItem>
+
+          <SidebarItem
+            href="/krediler"
+            current={pathname.startsWith('/krediler')}
+          >
+            <BanknotesIcon data-slot="icon" />
+            <SidebarLabel>Krediler</SidebarLabel>
           </SidebarItem>
 
           <SidebarItem

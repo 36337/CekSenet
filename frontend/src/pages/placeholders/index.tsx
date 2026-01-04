@@ -8,7 +8,6 @@ import { Heading } from '@/components/ui/heading'
 import { Text } from '@/components/ui/text'
 import { Badge } from '@/components/ui/badge'
 import {
-  Cog6ToothIcon,
   CloudArrowUpIcon,
 } from '@heroicons/react/20/solid'
 
@@ -47,18 +46,8 @@ function PlaceholderPage({ title, description, icon, children }: PlaceholderProp
 }
 
 // ============================================
-// Ayarlar
+// Yedekleme
 // ============================================
-
-export function AyarlarPage() {
-  return (
-    <PlaceholderPage
-      title="Ayarlar"
-      description="Uygulama ayarları"
-      icon={<Cog6ToothIcon className="h-6 w-6" />}
-    />
-  )
-}
 
 export function YedeklemePage() {
   return (

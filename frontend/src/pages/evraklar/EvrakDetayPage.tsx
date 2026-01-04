@@ -39,11 +39,14 @@ import {
   ExclamationTriangleIcon,
   CheckCircleIcon,
 } from '@heroicons/react/20/solid'
+import { WhatsAppIcon } from '@/components/icons'
 import {
   getEvrak,
   getEvrakHareketler,
   updateEvrakDurum,
   getFotograflar,
+  getWhatsAppSettings,
+  getKurlar,
   DURUM_LABELS,
   DURUM_COLORS,
   EVRAK_TIPI_LABELS,
@@ -53,6 +56,8 @@ import {
   type EvrakHareket,
   type EvrakDurumu,
   type EvrakFotograf,
+  type WhatsAppSettings,
+  type KurlarResponse,
 } from '@/services'
 import { FotografYukle, FotografGaleri } from '@/components/evrak'
 import { formatDate } from '@/services/dashboard'
@@ -60,8 +65,10 @@ import {
   formatCurrency,
   formatExchangeRate,
   getCurrencyName,
+  getCurrencySymbol,
   isTRY,
 } from '@/utils/currency'
+import { openWhatsApp } from '@/utils/whatsapp'
 
 // ============================================
 // Component
@@ -76,6 +83,8 @@ export function EvrakDetayPage() {
   const [evrak, setEvrak] = useState<EvrakDetay | null>(null)
   const [hareketler, setHareketler] = useState<EvrakHareket[]>([])
   const [fotograflar, setFotograflar] = useState<EvrakFotograf[]>([])
+  const [whatsAppSettings, setWhatsAppSettings] = useState<WhatsAppSettings | null>(null)
+  const [kurlar, setKurlar] = useState<KurlarResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -104,16 +113,20 @@ export function EvrakDetayPage() {
     setError(null)
 
     try {
-      // Paralel olarak evrak, hareketler ve fotoğrafları getir
-      const [evrakData, hareketlerData, fotograflarData] = await Promise.all([
+      // Paralel olarak evrak, hareketler, fotoğraflar, WhatsApp ayarları ve kurları getir
+      const [evrakData, hareketlerData, fotograflarData, whatsAppData, kurlarData] = await Promise.all([
         getEvrak(evrakId),
         getEvrakHareketler(evrakId),
         getFotograflar(evrakId),
+        getWhatsAppSettings().catch(() => ({ whatsapp_telefon: '', whatsapp_mesaj: '' })),
+        getKurlar().catch(() => null),
       ])
 
       setEvrak(evrakData)
       setHareketler(hareketlerData.hareketler)
       setFotograflar(fotograflarData.fotograflar)
+      setWhatsAppSettings(whatsAppData)
+      setKurlar(kurlarData)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Evrak yüklenirken hata oluştu')
     } finally {
@@ -177,6 +190,17 @@ export function EvrakDetayPage() {
     // Silinen fotoğrafı listeden çıkar
     setFotograflar((prev) => prev.filter((f) => f.id !== fotografId))
   }, [])
+
+  // ============================================
+  // WhatsApp
+  // ============================================
+
+  const handleWhatsAppClick = () => {
+    if (!evrak || !whatsAppSettings?.whatsapp_telefon) return
+    openWhatsApp(whatsAppSettings.whatsapp_telefon, whatsAppSettings.whatsapp_mesaj, evrak)
+  }
+
+  const isWhatsAppEnabled = Boolean(whatsAppSettings?.whatsapp_telefon)
 
   // ============================================
   // Render Helpers
@@ -265,6 +289,16 @@ export function EvrakDetayPage() {
           </div>
         </div>
         <div className="flex gap-2">
+          {isWhatsAppEnabled && (
+            <Button
+              color="green"
+              onClick={handleWhatsAppClick}
+              title="WhatsApp ile mesaj gönder"
+            >
+              <WhatsAppIcon className="h-5 w-5" />
+              <span className="hidden sm:inline">WhatsApp</span>
+            </Button>
+          )}
           {gecerliDurumlar.length > 0 && (
             <Button color="blue" onClick={handleOpenDurumModal}>
               Durum Değiştir
@@ -380,6 +414,97 @@ export function EvrakDetayPage() {
           <DescriptionDetails>{formatDateTime(evrak.updated_at)}</DescriptionDetails>
         </DescriptionList>
       </div>
+
+      {/* Döviz Bilgilendirme Kutucuğu */}
+      {kurlar?.kurlar && kurlar.kurlar.USD && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-lg">💱</span>
+            <span className="font-semibold text-blue-900">Güncel Döviz Bilgilendirme</span>
+          </div>
+          
+          <div className="space-y-3 text-sm">
+            {/* Güncel kur bilgisi */}
+            <div className="text-blue-700">
+              <span className="font-medium">Güncel Kur:</span>{' '}
+              1 $ = ₺{kurlar.kurlar.USD?.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+              {kurlar.kurlar.tarih && (
+                <span className="ml-1 text-blue-500">
+                  (TCMB - {kurlar.kurlar.tarih})
+                </span>
+              )}
+            </div>
+
+            <div className="border-t border-blue-200 pt-3">
+              {/* TL evrak için USD karşılığı */}
+              {isTRY(paraBirimi) && (
+                <div className="space-y-1">
+                  <div className="text-blue-800">
+                    <span className="font-medium">Bu evrak tutarı:</span>{' '}
+                    {formatCurrency(evrak.tutar, 'TRY')}
+                  </div>
+                  <div className="text-blue-900 font-semibold flex items-center gap-1">
+                    <span>→</span>
+                    <span>USD Karşılığı:</span>{' '}
+                    <span className="text-green-700">
+                      ${(evrak.tutar / kurlar.kurlar.USD).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* USD evrak için TL karşılığı */}
+              {paraBirimi === 'USD' && (
+                <div className="space-y-1">
+                  <div className="text-blue-800">
+                    <span className="font-medium">Bu evrak tutarı:</span>{' '}
+                    {formatCurrency(evrak.tutar, 'USD')}
+                  </div>
+                  <div className="text-blue-900 font-semibold flex items-center gap-1">
+                    <span>→</span>
+                    <span>TL Karşılığı:</span>{' '}
+                    <span className="text-green-700">
+                      {formatCurrency(evrak.tutar * kurlar.kurlar.USD, 'TRY')}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* EUR/GBP/CHF evrak için hem TL hem USD karşılığı */}
+              {['EUR', 'GBP', 'CHF'].includes(paraBirimi) && kurlar.kurlar[paraBirimi] && (
+                <div className="space-y-1">
+                  <div className="text-blue-800">
+                    <span className="font-medium">Bu evrak tutarı:</span>{' '}
+                    {formatCurrency(evrak.tutar, paraBirimi)}
+                  </div>
+                  <div className="text-blue-700 text-xs mb-1">
+                    (Güncel {paraBirimi} kuru: 1 {getCurrencySymbol(paraBirimi)} = ₺{kurlar.kurlar[paraBirimi]?.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 4 })})
+                  </div>
+                  <div className="text-blue-900 font-semibold flex items-center gap-1">
+                    <span>→</span>
+                    <span>TL Karşılığı:</span>{' '}
+                    <span className="text-green-700">
+                      {formatCurrency(evrak.tutar * kurlar.kurlar[paraBirimi], 'TRY')}
+                    </span>
+                  </div>
+                  <div className="text-blue-900 font-semibold flex items-center gap-1">
+                    <span>→</span>
+                    <span>USD Karşılığı:</span>{' '}
+                    <span className="text-green-700">
+                      ${((evrak.tutar * kurlar.kurlar[paraBirimi]) / kurlar.kurlar.USD).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Bilgi notu */}
+            <div className="text-xs text-blue-500 pt-2 border-t border-blue-200">
+              ℹ️ Kurlar TCMB verilerinden alınmıştır. Bilgilendirme amaçlıdır.
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Fotoğraflar */}
       <div className="rounded-lg border border-zinc-200 bg-white p-6">

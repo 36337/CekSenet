@@ -7,14 +7,14 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '@/contexts'
 import { ProtectedRoute, ApplicationLayout } from '@/components'
 import { AppInitializer } from '@/components/AppInitializer'
-import { LoginPage, SetupPage, DashboardPage, EvraklarPage, CarilerPage, RaporlarPage } from '@/pages'
+import { LoginPage, SetupPage, DashboardPage, EvraklarPage, CarilerPage, KredilerPage, RaporlarPage } from '@/pages'
 import { EvrakEklePage, EvrakDetayPage, EvrakDuzenlePage, EvrakImportPage } from '@/pages/evraklar'
 import { CariEklePage, CariDetayPage, CariDuzenlePage } from '@/pages/cariler'
-import { KullanicilarPage, ProfilPage } from '@/pages/ayarlar'
+import { KrediEklePage, KrediDetayPage, KrediDuzenlePage } from '@/pages/krediler'
+import { KullanicilarPage, ProfilPage, AyarlarPage } from '@/pages/ayarlar'
 
 // Placeholder pages (will be replaced with real pages later)
 import {
-  AyarlarPage,
   YedeklemePage,
 } from '@/pages/placeholders'
 
@@ -129,6 +129,48 @@ function App() {
               <ProtectedRoute>
                 <ApplicationLayout>
                   <CariDuzenlePage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Krediler */}
+          <Route
+            path="/krediler"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <KredilerPage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/krediler/yeni"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <KrediEklePage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/krediler/:id"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <KrediDetayPage />
+                </ApplicationLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/krediler/:id/duzenle"
+            element={
+              <ProtectedRoute>
+                <ApplicationLayout>
+                  <KrediDuzenlePage />
                 </ApplicationLayout>
               </ProtectedRoute>
             }

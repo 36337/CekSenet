@@ -26,3 +26,6 @@ export * from './modals'
 
 // Evrak
 export * from './evrak'
+
+// Icons (Custom)
+export * from './icons'

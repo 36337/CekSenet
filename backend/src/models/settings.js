@@ -22,7 +22,20 @@ const DEFAULT_SETTINGS = {
   'backup_retention_days': { default: '30', description: 'Yedek saklama süresi (gün)', editable: true },
   'auto_backup_enabled': { default: 'true', description: 'Otomatik yedekleme aktif mi', editable: true },
   'session_timeout_hours': { default: '24', description: 'Oturum süresi (saat)', editable: true },
-  'vade_uyari_gun': { default: '7', description: 'Vade uyarısı kaç gün önce', editable: true }
+  'vade_uyari_gun': { default: '7', description: 'Vade uyarısı kaç gün önce', editable: true },
+  'whatsapp_telefon': { default: '', description: 'WhatsApp mesaj gönderilecek telefon numarası', editable: true },
+  'whatsapp_mesaj': { 
+    default: `Merhaba, aşağıdaki evrak hakkında bilgi almak istiyorum:
+
+📄 Evrak No: {evrak_no}
+💰 Tutar: {tutar}
+📅 Vade: {vade_tarihi}
+👤 Keşideci: {kesideci}
+
+Detaylı bilgi verebilir misiniz?`,
+    description: 'WhatsApp mesaj şablonu', 
+    editable: true 
+  }
 };
 
 // ============================================

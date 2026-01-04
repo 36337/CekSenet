@@ -19,6 +19,7 @@ import {
   VadeUyarilariCompact,
   SonHareketler,
   IPInfoCard,
+  KrediOzetCard,
 } from '@/components/dashboard'
 
 import {
@@ -28,6 +29,8 @@ import {
   getSonHareketler,
   getVadeUyarilari,
 } from '@/services/dashboard'
+
+import { getKrediOzet, type KrediGenelOzet } from '@/services'
 
 import type {
   DashboardKart,
@@ -47,6 +50,7 @@ interface DashboardData {
   aylikDagilim: AylikDagilim[]
   sonHareketler: SonHareket[]
   vadeUyarilari: VadeUyarilari | null
+  krediOzet: KrediGenelOzet | null
 }
 
 interface LoadingState {
@@ -55,6 +59,7 @@ interface LoadingState {
   aylikDagilim: boolean
   sonHareketler: boolean
   vadeUyarilari: boolean
+  krediOzet: boolean
 }
 
 // ============================================
@@ -71,6 +76,7 @@ export function DashboardPage() {
     aylikDagilim: [],
     sonHareketler: [],
     vadeUyarilari: null,
+    krediOzet: null,
   })
 
   // Loading state
@@ -80,6 +86,7 @@ export function DashboardPage() {
     aylikDagilim: true,
     sonHareketler: true,
     vadeUyarilari: true,
+    krediOzet: true,
   })
 
   // Error state
@@ -103,6 +110,7 @@ export function DashboardPage() {
         aylikDagilim: true,
         sonHareketler: true,
         vadeUyarilari: true,
+        krediOzet: true,
       })
     }
     setError(null)
@@ -115,12 +123,14 @@ export function DashboardPage() {
         aylikRes,
         hareketlerRes,
         uyarilarRes,
+        krediOzetRes,
       ] = await Promise.all([
         getKartlar().catch(() => []),
         getDurumDagilimi().catch(() => []),
         getAylikDagilim(6).catch(() => []),
         getSonHareketler(10).catch(() => []),
         getVadeUyarilari().catch(() => null),
+        getKrediOzet().catch(() => null),
       ])
 
       setData({
@@ -129,6 +139,7 @@ export function DashboardPage() {
         aylikDagilim: aylikRes,
         sonHareketler: hareketlerRes,
         vadeUyarilari: uyarilarRes,
+        krediOzet: krediOzetRes,
       })
 
       setLastUpdated(new Date())
@@ -142,6 +153,7 @@ export function DashboardPage() {
         aylikDagilim: false,
         sonHareketler: false,
         vadeUyarilari: false,
+        krediOzet: false,
       })
       setIsRefreshing(false)
     }
@@ -239,7 +251,7 @@ export function DashboardPage() {
       <IPInfoCard />
 
       {/* Grafikler ve Uyarılar Grid */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-4">
         {/* Durum Dağılımı - Pie Chart */}
         <section className="rounded-xl border border-zinc-200 bg-white p-6">
           <Subheading>Durum Dağılımı</Subheading>
@@ -274,6 +286,18 @@ export function DashboardPage() {
             <VadeUyarilariCompact
               data={data.vadeUyarilari}
               isLoading={loading.vadeUyarilari}
+            />
+          </div>
+        </section>
+
+        {/* Kredi Özeti */}
+        <section className="rounded-xl border border-zinc-200 bg-white p-6">
+          <Subheading>Kredi Özeti</Subheading>
+          <Text className="mt-1 text-sm">Aktif krediler ve taksit durumu</Text>
+          <div className="mt-4">
+            <KrediOzetCard
+              data={data.krediOzet}
+              isLoading={loading.krediOzet}
             />
           </div>
         </section>
